@@ -7,44 +7,44 @@
   <style>
     :root {
       --orange: #f97316;
-      --orange-soft: #ffedd5;
+      --orange-dark: #ea580c;
       --navy: #0f172a;
       --navy-2: #1e293b;
-      --blue-soft: #e2e8f0;
-      --white: #ffffff;
+      --soft: #f8fafc;
+      --soft-2: #eef2ff;
+      --border: #e2e8f0;
       --text: #0f172a;
       --muted: #64748b;
       --card: #ffffff;
-      --border: #e2e8f0;
       --bg: #f8fafc;
-      --shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
+      --success: #16a34a;
+      --shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
     }
 
     body.dark {
+      --border: #334155;
       --text: #f8fafc;
       --muted: #cbd5e1;
       --card: #0f172a;
-      --border: #334155;
       --bg: #020617;
-      --blue-soft: #1e293b;
-      --orange-soft: rgba(249, 115, 22, 0.12);
-      --shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
+      --soft: #111827;
+      --soft-2: #1e293b;
+      --shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
     }
 
     * { box-sizing: border-box; }
-
     body {
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
       background: var(--bg);
       color: var(--text);
-      transition: background 0.25s ease, color 0.25s ease;
+      transition: 0.25s ease;
     }
 
-    .wrap {
-      max-width: 1360px;
+    .container {
+      max-width: 1500px;
       margin: 0 auto;
-      padding: 24px;
+      padding: 22px;
     }
 
     .card {
@@ -52,570 +52,517 @@
       border: 1px solid var(--border);
       border-radius: 28px;
       box-shadow: var(--shadow);
-      transition: 0.25s ease;
     }
 
     .hero {
-      padding: 28px;
-      margin-bottom: 20px;
+      padding: 26px;
+      margin-bottom: 18px;
     }
 
-    .hero-top {
+    .hero-row {
       display: flex;
       justify-content: space-between;
-      gap: 20px;
+      gap: 18px;
       align-items: flex-start;
       flex-wrap: wrap;
     }
 
     .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--muted);
       font-size: 14px;
-      font-weight: 700;
+      color: var(--muted);
+      font-weight: 800;
       margin-bottom: 10px;
     }
 
     h1 {
       margin: 0;
-      font-size: clamp(30px, 5vw, 54px);
+      font-size: clamp(30px, 4vw, 52px);
       line-height: 1.05;
     }
 
     .hero p {
-      margin: 12px 0 0;
       color: var(--muted);
-      max-width: 760px;
+      max-width: 850px;
       line-height: 1.6;
+      margin: 12px 0 0;
     }
 
     .actions {
       display: flex;
-      gap: 10px;
       flex-wrap: wrap;
+      gap: 10px;
     }
 
-    button, input, textarea {
-      font: inherit;
-    }
+    button, input, textarea, select { font: inherit; }
 
     .btn {
       border: none;
-      border-radius: 18px;
-      padding: 13px 16px;
       cursor: pointer;
-      font-weight: 700;
-      transition: transform 0.15s ease, opacity 0.2s ease, background 0.2s ease;
+      padding: 13px 16px;
+      border-radius: 18px;
+      font-weight: 800;
+      transition: .18s ease;
     }
-
     .btn:hover { transform: translateY(-1px); }
     .btn:active { transform: translateY(0); }
+    .btn-orange { background: var(--orange); color: #fff; }
+    .btn-orange:hover { background: var(--orange-dark); }
+    .btn-navy { background: var(--navy); color: #fff; }
+    .btn-soft { background: var(--soft-2); color: var(--text); }
+    .btn-danger { background: #ef4444; color: #fff; }
+    .btn-success { background: var(--success); color: #fff; }
 
-    .btn-orange {
-      background: var(--orange);
-      color: white;
-    }
-
-    .btn-navy {
-      background: var(--navy);
-      color: white;
-    }
-
-    .btn-soft {
-      background: var(--blue-soft);
-      color: var(--text);
-    }
-
-    .share-box {
+    .info-box, .toast {
+      display: none;
       margin-top: 14px;
-      padding: 14px 16px;
       border-radius: 18px;
-      background: var(--orange-soft);
-      border: 1px solid rgba(249,115,22,0.18);
-      color: var(--text);
-      display: none;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      background: var(--soft);
       word-break: break-word;
-    }
-
-    .winner {
-      display: none;
-      padding: 28px;
-      margin-bottom: 20px;
-      background: linear-gradient(135deg, var(--orange-soft), var(--card));
-      border: 1px solid rgba(249,115,22,0.22);
-      text-align: center;
-      animation: pop 0.35s ease;
-    }
-
-    @keyframes pop {
-      from { opacity: 0; transform: translateY(-8px) scale(0.98); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    .winner-title {
-      font-size: clamp(28px, 4vw, 46px);
-      font-weight: 900;
-      margin: 0;
-    }
-
-    .winner-sub {
-      margin-top: 10px;
-      font-size: clamp(18px, 2.4vw, 28px);
-      color: var(--text);
-      font-weight: 700;
     }
 
     .layout {
       display: grid;
-      grid-template-columns: 1.6fr 1fr;
-      gap: 20px;
+      grid-template-columns: 430px 1fr 380px;
+      gap: 18px;
+      align-items: start;
     }
 
-    .left-col, .right-col {
-      display: grid;
-      gap: 20px;
-    }
+    .section { padding: 22px; }
+    .section h2 { margin: 0 0 16px; font-size: 26px; }
 
-    .section {
-      padding: 24px;
-    }
+    .field { display: grid; gap: 8px; margin-bottom: 12px; }
+    .field label { font-size: 14px; font-weight: 800; color: var(--muted); }
 
-    .section h2 {
-      margin: 0 0 18px;
-      font-size: 28px;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .field label {
-      color: var(--muted);
-      font-weight: 700;
-      font-size: 14px;
-    }
-
-    input, textarea {
+    input, textarea, select {
       width: 100%;
-      border-radius: 18px;
       border: 1px solid var(--border);
-      padding: 14px 16px;
       background: var(--card);
       color: var(--text);
+      border-radius: 16px;
+      padding: 13px 14px;
       outline: none;
     }
 
-    textarea {
-      min-height: 130px;
-      resize: vertical;
+    textarea { min-height: 100px; resize: vertical; }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .question-manager { display: grid; gap: 12px; }
+    .question-list { display: grid; gap: 10px; max-height: 420px; overflow: auto; }
+
+    .question-item {
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 14px;
+      background: var(--soft);
     }
 
-    .screen {
+    .question-item.active {
+      border-color: rgba(249,115,22,.55);
+      box-shadow: 0 0 0 2px rgba(249,115,22,.12) inset;
+    }
+
+    .question-item-title {
+      font-weight: 900;
+      font-size: 18px;
+      margin: 0 0 6px;
+    }
+
+    .question-item-text {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+      margin: 0 0 10px;
+    }
+
+    .question-item-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .stage {
       background: linear-gradient(135deg, #0f172a, #1e293b);
       color: white;
       border-radius: 30px;
-      box-shadow: var(--shadow);
       overflow: hidden;
+      box-shadow: var(--shadow);
+      min-height: 760px;
+      position: sticky;
+      top: 18px;
     }
 
-    .screen-inner {
-      padding: 28px;
-    }
+    .stage-inner { padding: 24px; }
 
-    .screen-top {
+    .stage-head {
       display: flex;
+      gap: 10px;
       justify-content: space-between;
-      gap: 12px;
       align-items: center;
       flex-wrap: wrap;
       margin-bottom: 18px;
     }
 
     .pill {
-      padding: 10px 14px;
       border-radius: 999px;
+      padding: 10px 14px;
       font-size: 13px;
       font-weight: 800;
     }
+    .pill-dark { background: rgba(255,255,255,.1); }
+    .pill-orange { background: rgba(249,115,22,.18); color: #fdba74; }
 
-    .pill-dark { background: rgba(255,255,255,0.1); color: white; }
-    .pill-orange { background: rgba(249,115,22,0.18); color: #fdba74; }
-
-    .question-box, .answer-box {
+    .question-box {
+      min-height: 320px;
       border-radius: 28px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
       padding: 24px;
     }
 
-    .question-box {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.08);
-      min-height: 220px;
-    }
-
-    .question-label, .answer-label {
-      font-size: 24px;
-      font-weight: 800;
-      color: #cbd5e1;
-      margin-bottom: 12px;
-    }
-
-    .question-text {
-      font-size: clamp(28px, 4vw, 48px);
-      line-height: 1.2;
-      font-weight: 900;
-    }
+    .question-label, .answer-label { color: #cbd5e1; font-weight: 800; font-size: 24px; }
+    .question-text { margin-top: 12px; font-size: clamp(30px, 3vw, 48px); line-height: 1.2; font-weight: 900; }
 
     .answer-box {
-      margin-top: 16px;
-      border: 1px solid rgba(249,115,22,0.28);
-      background: rgba(249,115,22,0.12);
       display: none;
+      margin-top: 16px;
+      border-radius: 24px;
+      padding: 20px;
+      background: rgba(22,163,74,.16);
+      border: 1px solid rgba(22,163,74,.35);
     }
 
-    .answer-text {
-      font-size: clamp(24px, 3vw, 34px);
+    .answer-text { margin-top: 10px; font-size: clamp(24px, 2.5vw, 34px); font-weight: 900; }
+
+    .announce-box {
+      display: none;
+      margin-top: 16px;
+      border-radius: 24px;
+      padding: 18px;
+      background: rgba(249,115,22,.16);
+      border: 1px solid rgba(249,115,22,.35);
+      text-align: center;
       font-weight: 900;
-      margin-top: 10px;
+      font-size: clamp(22px, 2.5vw, 34px);
     }
 
-    .group-add {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
+    .groups-add { display: grid; grid-template-columns: 1fr auto; gap: 10px; }
+    .group-count { color: var(--muted); font-size: 13px; margin-top: 10px; }
+    .groups-list, .score-list { display: grid; gap: 10px; }
 
-    .group-list, .score-list {
-      display: grid;
-      gap: 12px;
-    }
-
-    .group-item {
+    .group-card {
       border: 1px solid var(--border);
-      background: color-mix(in srgb, var(--card) 85%, var(--blue-soft));
       border-radius: 22px;
-      padding: 16px;
+      background: var(--soft);
+      padding: 14px;
     }
 
-    .group-row {
+    .group-top {
       display: flex;
       justify-content: space-between;
       gap: 10px;
+      margin-bottom: 10px;
       align-items: center;
-      margin-bottom: 12px;
     }
 
-    .group-name {
-      font-size: 20px;
-      font-weight: 800;
-      margin: 0;
-    }
-
-    .group-score-label {
-      margin-top: 4px;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .mini-btn {
-      border: none;
-      background: transparent;
-      color: var(--muted);
-      font-weight: 800;
-      cursor: pointer;
-      border-radius: 12px;
-      padding: 8px 10px;
-    }
-
-    .mini-btn:hover { background: var(--blue-soft); }
-
-    .score-actions {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-    }
+    .group-name { font-size: 19px; font-weight: 900; margin: 0; }
+    .group-score { font-size: 14px; color: var(--muted); margin-top: 4px; }
+    .score-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 
     .score-entry {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
       border-radius: 24px;
-      padding: 16px;
       border: 1px solid var(--border);
+      padding: 16px;
       background: var(--card);
-      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
-      transition: 0.2s ease;
     }
 
     .score-entry.rank-1 {
-      margin-left: 0;
-      border-color: rgba(249,115,22,0.3);
-      background: linear-gradient(135deg, var(--orange-soft), var(--card));
+      background: linear-gradient(135deg, rgba(249,115,22,.14), var(--card));
+      border-color: rgba(249,115,22,.4);
       transform: scale(1.01);
     }
+    .score-entry.rank-2 { margin-left: 14px; }
+    .score-entry.rank-3 { margin-left: 28px; }
+    .score-entry.rank-other { margin-left: 42px; }
 
-    .score-entry.rank-2 { margin-left: 18px; }
-    .score-entry.rank-3 { margin-left: 36px; }
-    .score-entry.rank-other { margin-left: 54px; }
-
+    .score-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
     .rank-box {
-      width: 46px;
-      height: 46px;
-      border-radius: 16px;
-      display: grid;
-      place-items: center;
-      font-weight: 900;
-      background: var(--blue-soft);
-      color: var(--text);
-      flex-shrink: 0;
+      width: 48px; height: 48px; border-radius: 16px; flex-shrink: 0;
+      display: grid; place-items: center; font-weight: 900; background: var(--soft-2);
     }
+    .rank-1 .rank-box { background: #fed7aa; color: #9a3412; }
+    .score-meta .name { margin: 0; font-size: 20px; font-weight: 900; }
+    .score-meta .state { margin: 4px 0 0; font-size: 13px; color: var(--muted); }
+    .score-value { text-align: right; font-size: 30px; font-weight: 900; }
+    .score-value span { display: block; font-size: 11px; color: var(--muted); letter-spacing: 1px; }
 
-    .rank-1 .rank-box {
-      background: #fed7aa;
-      color: #9a3412;
+    .winner-box {
+      display: none;
+      margin-top: 16px;
+      padding: 22px;
+      border-radius: 26px;
+      border: 1px solid rgba(249,115,22,.35);
+      background: linear-gradient(135deg, rgba(249,115,22,.14), var(--card));
+      text-align: center;
     }
+    .winner-title { margin: 0; font-size: clamp(30px, 3vw, 44px); font-weight: 900; }
+    .winner-sub { margin-top: 10px; font-size: 22px; font-weight: 800; }
 
-    .score-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-width: 0;
-    }
-
-    .score-meta p {
-      margin: 0;
-    }
-
-    .score-meta .name {
-      font-size: 20px;
-      font-weight: 900;
-    }
-
-    .score-meta .state {
-      color: var(--muted);
-      margin-top: 4px;
-      font-size: 14px;
-    }
-
-    .score-value {
-      text-align: right;
-      font-weight: 900;
-      font-size: 28px;
-    }
-
-    .score-value span {
-      display: block;
-      font-size: 11px;
-      color: var(--muted);
-      letter-spacing: 1px;
-      margin-top: 2px;
-    }
-
-    .footer-note {
-      margin-top: 14px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.6;
-    }
-
-    @media (max-width: 1100px) {
+    @media (max-width: 1300px) {
       .layout { grid-template-columns: 1fr; }
+      .stage { position: static; min-height: auto; }
     }
 
-    @media (max-width: 700px) {
-      .wrap { padding: 14px; }
-      .hero, .section, .winner { padding: 18px; }
-      .form-grid { grid-template-columns: 1fr; }
+    @media (max-width: 760px) {
+      .container { padding: 12px; }
+      .section, .hero { padding: 16px; }
+      .two-col { grid-template-columns: 1fr; }
+      .groups-add { grid-template-columns: 1fr; }
       .score-actions { grid-template-columns: repeat(2, 1fr); }
       .score-entry.rank-2, .score-entry.rank-3, .score-entry.rank-other { margin-left: 0; }
-      .group-add { grid-template-columns: 1fr; }
-      .actions { width: 100%; }
-      .actions .btn { flex: 1 1 180px; }
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
+  <div class="container">
     <section class="card hero">
-      <div class="hero-top">
+      <div class="hero-row">
         <div>
           <div class="eyebrow">🏆 İsabet Okulları</div>
           <h1>İsabet Okulları Skor Tablosu</h1>
           <p>
-            Soruyu yansıt, doğru cevabı göster, grup isimlerini ekle, puanları işle ve kazananı ekranda anında ilan et.
-            Açık ve koyu tema arasında geçiş yapabilir, tek bağlantıyla sistemi paylaşabilirsin.
+            Soruları cevaplarıyla birlikte sisteme yükle, sırayla yayınla, yanda skor tablosunu gör,
+            2 ile 15 grup arasında yarışmayı yönet ve puan ekledikçe sıralamanın anında değişmesini sağla.
           </p>
         </div>
-
         <div class="actions">
-          <button class="btn btn-orange" id="toggleAnswerBtn">Cevabı Göster</button>
-          <button class="btn btn-soft" id="resetScoresBtn">Puanları Sıfırla</button>
+          <button class="btn btn-orange" id="showAnswerBtn">Cevabı Göster</button>
           <button class="btn btn-navy" id="announceWinnerBtn">Kazananı Açıkla</button>
           <button class="btn btn-soft" id="themeBtn">Koyu Tema</button>
+          <button class="btn btn-soft" id="resetBtn">Puanları Sıfırla</button>
           <button class="btn btn-orange" id="shareBtn">Link Oluştur</button>
         </div>
       </div>
-      <div class="share-box" id="shareBox"></div>
-    </section>
-
-    <section class="card winner" id="winnerBox">
-      <h2 class="winner-title" id="winnerTitle">Tebrikler, kazandınız!</h2>
-      <div class="winner-sub" id="winnerSub">Grup A • 10 puan</div>
+      <div class="info-box" id="shareBox"></div>
     </section>
 
     <div class="layout">
-      <div class="left-col">
-        <section class="card section">
-          <h2>Soru Yönetimi</h2>
-          <div class="form-grid">
-            <div class="field">
-              <label for="questionTitle">Soru Başlığı</label>
-              <input id="questionTitle" type="text" value="Soru 1" />
-            </div>
-            <div class="field">
-              <label for="answerText">Doğru Cevap</label>
-              <input id="answerText" type="text" value="180°" />
-            </div>
+      <section class="card section">
+        <h2>Soru Havuzu</h2>
+        <div class="question-manager">
+          <div class="field">
+            <label for="newQuestionTitle">Soru Başlığı</label>
+            <input id="newQuestionTitle" type="text" placeholder="Örnek: Soru 1" />
           </div>
-          <div class="field" style="margin-top:14px;">
-            <label for="questionText">Soru Metni</label>
-            <textarea id="questionText">Bir üçgenin iç açılarının toplamı kaç derecedir?</textarea>
+          <div class="field">
+            <label for="newQuestionText">Soru Metni</label>
+            <textarea id="newQuestionText" placeholder="Soruyu buraya yaz"></textarea>
           </div>
-        </section>
-
-        <section class="screen">
-          <div class="screen-inner">
-            <div class="screen-top">
-              <div class="pill pill-dark" id="screenQuestionTitle">Soru 1</div>
-              <div class="pill pill-orange">İsabet Okulları</div>
-            </div>
-
-            <div class="question-box">
-              <div class="question-label">Soru</div>
-              <div class="question-text" id="screenQuestionText">Bir üçgenin iç açılarının toplamı kaç derecedir?</div>
-            </div>
-
-            <div class="answer-box" id="answerBox">
-              <div class="answer-label">Doğru Cevap</div>
-              <div class="answer-text" id="screenAnswerText">180°</div>
-            </div>
+          <div class="field">
+            <label for="newAnswerText">Doğru Cevap</label>
+            <input id="newAnswerText" type="text" placeholder="Doğru cevabı yaz" />
           </div>
-        </section>
-      </div>
-
-      <div class="right-col">
-        <section class="card section">
-          <h2>Grup İsimleri ve Puanlama</h2>
-          <div class="group-add">
-            <input id="newGroupName" type="text" placeholder="Yeni grup adı" />
-            <button class="btn btn-orange" id="addGroupBtn">Grup Ekle</button>
+          <div class="two-col">
+            <button class="btn btn-orange" id="addQuestionBtn">Soruyu Havuze Ekle</button>
+            <button class="btn btn-soft" id="nextQuestionBtn">Sıradaki Soruyu Yayınla</button>
           </div>
-          <div class="group-list" id="groupList"></div>
-        </section>
+        </div>
 
-        <section class="card section">
-          <h2>Canlı Grup Skor Tablosu</h2>
-          <div class="score-list" id="scoreList"></div>
-          <div class="footer-note">
-            Bu sürüm tek dosyalık hazırlandı. GitHub Pages'e sadece bu dosyayı <strong>index.html</strong> adıyla yüklemen yeterli.
+        <div style="margin-top:16px;" class="question-list" id="questionList"></div>
+      </section>
+
+      <section class="stage" id="stage">
+        <div class="stage-inner">
+          <div class="stage-head">
+            <div class="pill pill-dark" id="stageQuestionTitle">Soru seçilmedi</div>
+            <div class="pill pill-orange">İsabet Okulları</div>
           </div>
-        </section>
-      </div>
+
+          <div class="question-box">
+            <div class="question-label">Yayınlanan Soru</div>
+            <div class="question-text" id="stageQuestionText">Henüz soru yayınlanmadı.</div>
+          </div>
+
+          <div class="answer-box" id="answerBox">
+            <div class="answer-label">Doğru Cevap</div>
+            <div class="answer-text" id="stageAnswerText">-</div>
+          </div>
+
+          <div class="announce-box" id="announceBox">Grup A, tebrikler! 10 puan kazandınız.</div>
+
+          <div class="winner-box" id="winnerBox">
+            <h3 class="winner-title" id="winnerTitle">Tebrikler, kazandınız!</h3>
+            <div class="winner-sub" id="winnerSub">Grup A • 10 puan</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card section">
+        <h2>Grup ve Skor Yönetimi</h2>
+        <div class="groups-add">
+          <input id="newGroupName" type="text" placeholder="Yeni grup adı gir" />
+          <button class="btn btn-orange" id="addGroupBtn">Grup Ekle</button>
+        </div>
+        <div class="group-count" id="groupCountText">En az 2, en fazla 15 grup önerilir.</div>
+
+        <div style="margin-top:14px;" class="groups-list" id="groupsList"></div>
+
+        <h2 style="margin-top:22px;">Canlı Skor Tablosu</h2>
+        <div class="score-list" id="scoreList"></div>
+      </section>
     </div>
   </div>
 
   <script>
     const state = {
+      dark: false,
       answerVisible: false,
+      activeQuestionIndex: -1,
+      questions: [
+        {
+          title: "Soru 1",
+          text: "Bir üçgenin iç açılarının toplamı kaç derecedir?",
+          answer: "180°"
+        }
+      ],
       groups: [
         { id: 1, name: "Grup A", score: 0 },
-        { id: 2, name: "Grup B", score: 0 },
-        { id: 3, name: "Grup C", score: 0 },
-        { id: 4, name: "Grup D", score: 0 }
+        { id: 2, name: "Grup B", score: 0 }
       ]
     };
 
-    const questionTitleInput = document.getElementById("questionTitle");
-    const questionTextInput = document.getElementById("questionText");
-    const answerTextInput = document.getElementById("answerText");
-    const screenQuestionTitle = document.getElementById("screenQuestionTitle");
-    const screenQuestionText = document.getElementById("screenQuestionText");
-    const screenAnswerText = document.getElementById("screenAnswerText");
-    const answerBox = document.getElementById("answerBox");
-    const toggleAnswerBtn = document.getElementById("toggleAnswerBtn");
-    const resetScoresBtn = document.getElementById("resetScoresBtn");
-    const announceWinnerBtn = document.getElementById("announceWinnerBtn");
-    const themeBtn = document.getElementById("themeBtn");
-    const addGroupBtn = document.getElementById("addGroupBtn");
-    const newGroupNameInput = document.getElementById("newGroupName");
-    const groupList = document.getElementById("groupList");
-    const scoreList = document.getElementById("scoreList");
-    const winnerBox = document.getElementById("winnerBox");
-    const winnerTitle = document.getElementById("winnerTitle");
-    const winnerSub = document.getElementById("winnerSub");
-    const shareBtn = document.getElementById("shareBtn");
-    const shareBox = document.getElementById("shareBox");
+    const $ = (id) => document.getElementById(id);
+    const questionList = $("questionList");
+    const groupsList = $("groupsList");
+    const scoreList = $("scoreList");
+    const shareBox = $("shareBox");
+    const answerBox = $("answerBox");
+    const announceBox = $("announceBox");
+    const winnerBox = $("winnerBox");
 
-    function syncQuestionScreen() {
-      screenQuestionTitle.textContent = questionTitleInput.value || "Soru";
-      screenQuestionText.textContent = questionTextInput.value || "Soru metni giriniz";
-      screenAnswerText.textContent = answerTextInput.value || "Cevap giriniz";
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function getActiveQuestion() {
+      return state.questions[state.activeQuestionIndex] || null;
     }
 
     function sortGroups() {
       return [...state.groups].sort((a, b) => b.score - a.score || a.name.localeCompare(b.name, "tr"));
     }
 
-    function renderGroups() {
-      groupList.innerHTML = "";
-      const sortedBase = [...state.groups];
+    function renderStage() {
+      const active = getActiveQuestion();
+      $("stageQuestionTitle").textContent = active ? active.title : "Soru seçilmedi";
+      $("stageQuestionText").textContent = active ? active.text : "Henüz soru yayınlanmadı.";
+      $("stageAnswerText").textContent = active ? active.answer : "-";
+      answerBox.style.display = state.answerVisible && active ? "block" : "none";
+      $("showAnswerBtn").textContent = state.answerVisible ? "Cevabı Gizle" : "Cevabı Göster";
+    }
 
-      sortedBase.forEach((group) => {
+    function renderQuestions() {
+      questionList.innerHTML = "";
+      state.questions.forEach((q, index) => {
         const item = document.createElement("div");
-        item.className = "group-item";
+        item.className = `question-item ${index === state.activeQuestionIndex ? "active" : ""}`;
         item.innerHTML = `
-          <div class="group-row">
-            <div>
-              <p class="group-name">${escapeHtml(group.name)}</p>
-              <div class="group-score-label">Puan: ${group.score}</div>
-            </div>
-            <button class="mini-btn" data-remove="${group.id}">Sil</button>
-          </div>
-          <div class="score-actions">
-            <button class="btn btn-soft" data-score="-5" data-id="${group.id}">-5</button>
-            <button class="btn btn-soft" data-score="-1" data-id="${group.id}">-1</button>
-            <button class="btn btn-orange" data-score="1" data-id="${group.id}">+1</button>
-            <button class="btn btn-navy" data-score="5" data-id="${group.id}">+5</button>
+          <div class="question-item-title">${escapeHtml(q.title)}</div>
+          <p class="question-item-text">${escapeHtml(q.text)}</p>
+          <div class="question-item-actions">
+            <button class="btn btn-soft" data-publish="${index}">Yayınla</button>
+            <button class="btn btn-soft" data-showanswer="${index}">Cevabı Aç</button>
+            <button class="btn btn-danger" data-deletequestion="${index}">Sil</button>
           </div>
         `;
-        groupList.appendChild(item);
+        questionList.appendChild(item);
       });
 
-      groupList.querySelectorAll("[data-score]").forEach((btn) => {
+      questionList.querySelectorAll("[data-publish]").forEach((btn) => {
         btn.addEventListener("click", () => {
-          const id = Number(btn.dataset.id);
-          const amount = Number(btn.dataset.score);
-          const target = state.groups.find((g) => g.id === id);
-          if (!target) return;
-          target.score = Math.max(0, target.score + amount);
+          state.activeQuestionIndex = Number(btn.dataset.publish);
+          state.answerVisible = false;
+          hideAnnouncements();
           renderAll();
         });
       });
 
-      groupList.querySelectorAll("[data-remove]").forEach((btn) => {
+      questionList.querySelectorAll("[data-showanswer]").forEach((btn) => {
         btn.addEventListener("click", () => {
-          const id = Number(btn.dataset.remove);
+          state.activeQuestionIndex = Number(btn.dataset.showanswer);
+          state.answerVisible = true;
+          renderAll();
+        });
+      });
+
+      questionList.querySelectorAll("[data-deletequestion]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const index = Number(btn.dataset.deletequestion);
+          state.questions.splice(index, 1);
+          if (state.activeQuestionIndex === index) state.activeQuestionIndex = -1;
+          if (state.activeQuestionIndex > index) state.activeQuestionIndex -= 1;
+          hideAnnouncements();
+          renderAll();
+        });
+      });
+    }
+
+    function renderGroups() {
+      groupsList.innerHTML = "";
+      $("groupCountText").textContent = `${state.groups.length} grup var. En az 2, en fazla 15 grup kullanabilirsin.`;
+
+      state.groups.forEach((group) => {
+        const card = document.createElement("div");
+        card.className = "group-card";
+        card.innerHTML = `
+          <div class="group-top">
+            <div>
+              <p class="group-name">${escapeHtml(group.name)}</p>
+              <div class="group-score">Puan: ${group.score}</div>
+            </div>
+            <button class="btn btn-danger" data-removegroup="${group.id}">Sil</button>
+          </div>
+          <div class="score-actions">
+            <button class="btn btn-soft" data-point="1" data-id="${group.id}">+1</button>
+            <button class="btn btn-soft" data-point="5" data-id="${group.id}">+5</button>
+            <button class="btn btn-orange" data-point="10" data-id="${group.id}">+10</button>
+            <button class="btn btn-navy" data-point="-5" data-id="${group.id}">-5</button>
+          </div>
+        `;
+        groupsList.appendChild(card);
+      });
+
+      groupsList.querySelectorAll("[data-point]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = Number(btn.dataset.id);
+          const point = Number(btn.dataset.point);
+          const target = state.groups.find((g) => g.id === id);
+          if (!target) return;
+          target.score = Math.max(0, target.score + point);
+          if (point > 0) {
+            showPointAnnouncement(target.name, point);
+          }
+          renderAll();
+        });
+      });
+
+      groupsList.querySelectorAll("[data-removegroup]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          if (state.groups.length <= 2) {
+            alert("En az 2 grup kalmalı.");
+            return;
+          }
+          const id = Number(btn.dataset.removegroup);
           state.groups = state.groups.filter((g) => g.id !== id);
           renderAll();
         });
@@ -625,7 +572,6 @@
     function renderScoreboard() {
       scoreList.innerHTML = "";
       const ranking = sortGroups();
-
       ranking.forEach((group, index) => {
         const row = document.createElement("div");
         row.className = `score-entry ${index === 0 ? "rank-1" : index === 1 ? "rank-2" : index === 2 ? "rank-3" : "rank-other"}`;
@@ -643,100 +589,131 @@
       });
     }
 
-    function renderWinner() {
-      const ranking = sortGroups();
-      if (!ranking.length) {
-        winnerBox.style.display = "none";
-        return;
-      }
-      const top = ranking[0];
-      const hasSingleWinner = ranking.length === 1 || top.score > ranking[1].score;
-      winnerTitle.textContent = hasSingleWinner ? "Tebrikler, kazandınız!" : "Lider grup ekranda!";
-      winnerSub.textContent = `${top.name} • ${top.score} puan`;
+    function showPointAnnouncement(groupName, point) {
+      announceBox.style.display = "block";
+      announceBox.textContent = `${groupName}, tebrikler! ${point} puan kazandınız.`;
+      clearTimeout(showPointAnnouncement.timer);
+      showPointAnnouncement.timer = setTimeout(() => {
+        announceBox.style.display = "none";
+      }, 2500);
     }
 
-    function renderAnswerBox() {
-      answerBox.style.display = state.answerVisible ? "block" : "none";
-      toggleAnswerBtn.textContent = state.answerVisible ? "Cevabı Gizle" : "Cevabı Göster";
+    function hideAnnouncements() {
+      announceBox.style.display = "none";
+      winnerBox.style.display = "none";
+    }
+
+    function renderWinner() {
+      const ranking = sortGroups();
+      if (!ranking.length) return;
+      const top = ranking[0];
+      const hasSingleWinner = ranking.length === 1 || top.score > ranking[1].score;
+      $("winnerTitle").textContent = hasSingleWinner ? "Tebrikler, kazandınız!" : "Lider grup ekranda!";
+      $("winnerSub").textContent = `${top.name} • ${top.score} puan`;
+      winnerBox.style.display = "block";
+    }
+
+    function renderTheme() {
+      document.body.classList.toggle("dark", state.dark);
+      $("themeBtn").textContent = state.dark ? "Açık Tema" : "Koyu Tema";
     }
 
     function renderAll() {
-      syncQuestionScreen();
+      renderTheme();
+      renderQuestions();
+      renderStage();
       renderGroups();
       renderScoreboard();
-      renderWinner();
-      renderAnswerBox();
     }
 
-    function escapeHtml(value) {
-      return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
+    $("addQuestionBtn").addEventListener("click", () => {
+      const title = $("newQuestionTitle").value.trim();
+      const text = $("newQuestionText").value.trim();
+      const answer = $("newAnswerText").value.trim();
+      if (!title || !text || !answer) {
+        alert("Soru başlığı, soru metni ve cevap alanını doldur.");
+        return;
+      }
+      state.questions.push({ title, text, answer });
+      $("newQuestionTitle").value = "";
+      $("newQuestionText").value = "";
+      $("newAnswerText").value = "";
+      renderAll();
+    });
 
-    questionTitleInput.addEventListener("input", renderAll);
-    questionTextInput.addEventListener("input", renderAll);
-    answerTextInput.addEventListener("input", renderAll);
+    $("nextQuestionBtn").addEventListener("click", () => {
+      if (!state.questions.length) return;
+      if (state.activeQuestionIndex < state.questions.length - 1) {
+        state.activeQuestionIndex += 1;
+      } else {
+        state.activeQuestionIndex = 0;
+      }
+      state.answerVisible = false;
+      hideAnnouncements();
+      renderAll();
+    });
 
-    toggleAnswerBtn.addEventListener("click", () => {
+    $("showAnswerBtn").addEventListener("click", () => {
+      if (state.activeQuestionIndex === -1) {
+        alert("Önce bir soru yayınla.");
+        return;
+      }
       state.answerVisible = !state.answerVisible;
-      renderAnswerBox();
+      renderStage();
     });
 
-    resetScoresBtn.addEventListener("click", () => {
-      state.groups = state.groups.map((group) => ({ ...group, score: 0 }));
-      winnerBox.style.display = "none";
-      renderAll();
-    });
-
-    announceWinnerBtn.addEventListener("click", () => {
+    $("announceWinnerBtn").addEventListener("click", () => {
       renderWinner();
-      winnerBox.style.display = "block";
-      winnerBox.scrollIntoView({ behavior: "smooth", block: "start" });
+      winnerBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
     });
 
-    themeBtn.addEventListener("click", () => {
-      document.body.classList.toggle("dark");
-      themeBtn.textContent = document.body.classList.contains("dark") ? "Açık Tema" : "Koyu Tema";
+    $("themeBtn").addEventListener("click", () => {
+      state.dark = !state.dark;
+      renderTheme();
     });
 
-    addGroupBtn.addEventListener("click", () => {
-      const name = newGroupNameInput.value.trim();
-      if (!name) return;
-      state.groups.push({ id: Date.now(), name, score: 0 });
-      newGroupNameInput.value = "";
+    $("resetBtn").addEventListener("click", () => {
+      state.groups = state.groups.map((g) => ({ ...g, score: 0 }));
+      hideAnnouncements();
       renderAll();
     });
 
-    newGroupNameInput.addEventListener("keydown", (e) => {
+    $("addGroupBtn").addEventListener("click", () => {
+      const name = $("newGroupName").value.trim();
+      if (!name) return;
+      if (state.groups.length >= 15) {
+        alert("En fazla 15 grup ekleyebilirsin.");
+        return;
+      }
+      state.groups.push({ id: Date.now(), name, score: 0 });
+      $("newGroupName").value = "";
+      renderAll();
+    });
+
+    $("newGroupName").addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
-        addGroupBtn.click();
+        $("addGroupBtn").click();
       }
     });
 
-    shareBtn.addEventListener("click", async () => {
+    $("shareBtn").addEventListener("click", async () => {
       const payload = {
-        questionTitle: questionTitleInput.value,
-        questionText: questionTextInput.value,
-        answerText: answerTextInput.value,
+        dark: state.dark,
+        answerVisible: state.answerVisible,
+        activeQuestionIndex: state.activeQuestionIndex,
+        questions: state.questions,
         groups: state.groups,
-        dark: document.body.classList.contains("dark")
       };
-
       const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
       const url = `${window.location.origin}${window.location.pathname}?state=${encoded}`;
       shareBox.style.display = "block";
-      shareBox.innerHTML = `Oluşturulan bağlantı hazır: <strong>${escapeHtml(url)}</strong>`;
-
+      shareBox.innerHTML = `Bağlantı hazır: <strong>${escapeHtml(url)}</strong>`;
       try {
         await navigator.clipboard.writeText(url);
         shareBox.innerHTML += "<br>Bağlantı panoya da kopyalandı.";
-      } catch (err) {
-        shareBox.innerHTML += "<br>Panoya kopyalama otomatik olmadı. Bağlantıyı elle kopyalayabilirsin.";
+      } catch (e) {
+        shareBox.innerHTML += "<br>Panoya otomatik kopyalanamadı. Elle kopyalayabilirsin.";
       }
     });
 
@@ -744,19 +721,15 @@
       const params = new URLSearchParams(window.location.search);
       const raw = params.get("state");
       if (!raw) return;
-
       try {
         const parsed = JSON.parse(decodeURIComponent(escape(atob(raw))));
-        if (parsed.questionTitle) questionTitleInput.value = parsed.questionTitle;
-        if (parsed.questionText) questionTextInput.value = parsed.questionText;
-        if (parsed.answerText) answerTextInput.value = parsed.answerText;
+        if (typeof parsed.dark === "boolean") state.dark = parsed.dark;
+        if (typeof parsed.answerVisible === "boolean") state.answerVisible = parsed.answerVisible;
+        if (typeof parsed.activeQuestionIndex === "number") state.activeQuestionIndex = parsed.activeQuestionIndex;
+        if (Array.isArray(parsed.questions)) state.questions = parsed.questions;
         if (Array.isArray(parsed.groups)) state.groups = parsed.groups;
-        if (parsed.dark) {
-          document.body.classList.add("dark");
-          themeBtn.textContent = "Açık Tema";
-        }
-      } catch (error) {
-        console.error("Bağlantı verisi okunamadı", error);
+      } catch (err) {
+        console.error("Bağlantı verisi okunamadı", err);
       }
     }
 
