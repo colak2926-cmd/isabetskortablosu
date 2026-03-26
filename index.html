@@ -9,7 +9,6 @@
       --orange: #f97316;
       --orange-dark: #ea580c;
       --navy: #0f172a;
-      --navy-2: #1e293b;
       --soft: #f8fafc;
       --soft-2: #eef2ff;
       --border: #e2e8f0;
@@ -40,8 +39,6 @@
       color: var(--text);
       transition: 0.25s ease;
     }
-
-    .hidden { display: none !important; }
 
     .container {
       max-width: 1500px;
@@ -95,7 +92,7 @@
       gap: 10px;
     }
 
-    button, input, textarea, select { font: inherit; }
+    button, input, textarea { font: inherit; }
 
     .btn {
       border: none;
@@ -136,7 +133,7 @@
     .field { display: grid; gap: 8px; margin-bottom: 12px; }
     .field label { font-size: 14px; font-weight: 800; color: var(--muted); }
 
-    input, textarea, select {
+    input, textarea {
       width: 100%;
       border: 1px solid var(--border);
       background: var(--card);
@@ -330,6 +327,110 @@
     .winner-title { margin: 0; font-size: clamp(30px, 3vw, 44px); font-weight: 900; }
     .winner-sub { margin-top: 10px; font-size: 22px; font-weight: 800; }
 
+    .presenter-toolbar {
+      display: none;
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      width: min(420px, calc(100vw - 24px));
+      background: rgba(15,23,42,.96);
+      color: white;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,.35);
+      z-index: 9999;
+      overflow: hidden;
+    }
+
+    .presenter-toolbar.show { display: block; }
+    .presenter-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 14px 16px;
+      background: rgba(249,115,22,.14);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+
+    .presenter-head h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .presenter-body {
+      padding: 16px;
+      display: grid;
+      gap: 14px;
+      max-height: 70vh;
+      overflow: auto;
+    }
+
+    .presenter-mini-title {
+      font-size: 13px;
+      color: #cbd5e1;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .presenter-grid {
+      display: grid;
+      gap: 8px;
+    }
+
+    .presenter-question-item,
+    .presenter-group-item {
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 18px;
+      padding: 12px;
+      background: rgba(255,255,255,.04);
+    }
+
+    .presenter-question-item.active {
+      border-color: rgba(249,115,22,.55);
+      background: rgba(249,115,22,.12);
+    }
+
+    .presenter-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .presenter-name {
+      font-weight: 900;
+      font-size: 16px;
+    }
+
+    .presenter-sub {
+      font-size: 12px;
+      color: #cbd5e1;
+      margin-top: 4px;
+    }
+
+    .presenter-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .mini-pill-btn {
+      border: none;
+      border-radius: 12px;
+      padding: 8px 10px;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 12px;
+    }
+
+    .mini-pill-orange { background: #f97316; color: white; }
+    .mini-pill-soft { background: #334155; color: white; }
+    .mini-pill-navy { background: #1d4ed8; color: white; }
+    .mini-pill-red { background: #ef4444; color: white; }
+
     body.presentation-mode .hero,
     body.presentation-mode .left-panel,
     body.presentation-mode .right-panel {
@@ -355,6 +456,7 @@
 
     body.presentation-mode .stage-inner {
       padding: 34px;
+      padding-bottom: 120px;
     }
 
     @media (max-width: 1300px) {
@@ -369,7 +471,8 @@
       .groups-add { grid-template-columns: 1fr; }
       .score-actions { grid-template-columns: repeat(2, 1fr); }
       .score-entry.rank-2, .score-entry.rank-3, .score-entry.rank-other { margin-left: 0; }
-      body.presentation-mode .stage-inner { padding: 18px; }
+      body.presentation-mode .stage-inner { padding: 18px; padding-bottom: 120px; }
+      .presenter-toolbar { right: 12px; bottom: 12px; width: calc(100vw - 24px); }
     }
   </style>
 </head>
@@ -479,6 +582,33 @@
     </div>
   </div>
 
+  <div class="presenter-toolbar" id="presenterToolbar">
+    <div class="presenter-head">
+      <h3>Sunum Kontrol Paneli</h3>
+      <button class="mini-pill-btn mini-pill-red" id="closePresenterBtn">Kapat</button>
+    </div>
+    <div class="presenter-body">
+      <div>
+        <div class="presenter-mini-title">Soru Kontrolleri</div>
+        <div class="presenter-actions" style="margin-top:0;">
+          <button class="mini-pill-btn mini-pill-orange" id="presenterNextQuestionBtn">Sıradaki Soru</button>
+          <button class="mini-pill-btn mini-pill-soft" id="presenterToggleAnswerBtn">Cevap Aç/Kapat</button>
+          <button class="mini-pill-btn mini-pill-navy" id="presenterWinnerBtn">Kazananı Açıkla</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="presenter-mini-title">Sorular</div>
+        <div class="presenter-grid" id="presenterQuestionList"></div>
+      </div>
+
+      <div>
+        <div class="presenter-mini-title">Puan Ver</div>
+        <div class="presenter-grid" id="presenterGroupList"></div>
+      </div>
+    </div>
+  </div>
+
   <script>
     const state = {
       dark: false,
@@ -508,6 +638,7 @@
     const answerBox = $("answerBox");
     const announceBox = $("announceBox");
     const winnerBox = $("winnerBox");
+    const presenterToolbar = $("presenterToolbar");
 
     function escapeHtml(value) {
       return String(value)
@@ -567,6 +698,7 @@
 
       answerBox.style.display = state.answerVisible && active ? "block" : "none";
       $("showAnswerBtn").textContent = state.answerVisible ? "Cevabı Gizle" : "Cevabı Göster";
+      $("presenterToggleAnswerBtn").textContent = state.answerVisible ? "Cevabı Kapat" : "Cevabı Aç";
     }
 
     function renderQuestions() {
@@ -587,12 +719,7 @@
       });
 
       questionList.querySelectorAll("[data-publish]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          state.activeQuestionIndex = Number(btn.dataset.publish);
-          state.answerVisible = false;
-          hideAnnouncements();
-          renderAll();
-        });
+        btn.addEventListener("click", () => publishQuestion(Number(btn.dataset.publish)));
       });
 
       questionList.querySelectorAll("[data-showanswer]").forEach((btn) => {
@@ -613,6 +740,48 @@
           renderAll();
         });
       });
+    }
+
+    function renderPresenterQuestions() {
+      const box = $("presenterQuestionList");
+      box.innerHTML = "";
+      state.questions.forEach((q, index) => {
+        const item = document.createElement("div");
+        item.className = `presenter-question-item ${index === state.activeQuestionIndex ? "active" : ""}`;
+        item.innerHTML = `
+          <div class="presenter-row">
+            <div>
+              <div class="presenter-name">${escapeHtml(q.title)}</div>
+              <div class="presenter-sub">${escapeHtml(q.text).slice(0, 70)}${q.text.length > 70 ? "..." : ""}</div>
+            </div>
+          </div>
+          <div class="presenter-actions">
+            <button class="mini-pill-btn mini-pill-orange" data-presentpublish="${index}">Yayınla</button>
+            <button class="mini-pill-btn mini-pill-soft" data-presentanswer="${index}">Cevabı Aç</button>
+          </div>
+        `;
+        box.appendChild(item);
+      });
+
+      box.querySelectorAll("[data-presentpublish]").forEach((btn) => {
+        btn.addEventListener("click", () => publishQuestion(Number(btn.dataset.presentpublish)));
+      });
+
+      box.querySelectorAll("[data-presentanswer]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          state.activeQuestionIndex = Number(btn.dataset.presentanswer);
+          state.answerVisible = true;
+          renderAll();
+        });
+      });
+    }
+
+    function updateGroupScore(id, point) {
+      const target = state.groups.find((g) => g.id === id);
+      if (!target) return;
+      target.score = Math.max(0, target.score + point);
+      if (point > 0) showPointAnnouncement(target.name, point);
+      renderAll();
     }
 
     function renderGroups() {
@@ -641,15 +810,7 @@
       });
 
       groupsList.querySelectorAll("[data-point]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const id = Number(btn.dataset.id);
-          const point = Number(btn.dataset.point);
-          const target = state.groups.find((g) => g.id === id);
-          if (!target) return;
-          target.score = Math.max(0, target.score + point);
-          if (point > 0) showPointAnnouncement(target.name, point);
-          renderAll();
-        });
+        btn.addEventListener("click", () => updateGroupScore(Number(btn.dataset.id), Number(btn.dataset.point)));
       });
 
       groupsList.querySelectorAll("[data-removegroup]").forEach((btn) => {
@@ -662,6 +823,34 @@
           state.groups = state.groups.filter((g) => g.id !== id);
           renderAll();
         });
+      });
+    }
+
+    function renderPresenterGroups() {
+      const box = $("presenterGroupList");
+      box.innerHTML = "";
+      state.groups.forEach((group) => {
+        const item = document.createElement("div");
+        item.className = "presenter-group-item";
+        item.innerHTML = `
+          <div class="presenter-row">
+            <div>
+              <div class="presenter-name">${escapeHtml(group.name)}</div>
+              <div class="presenter-sub">Puan: ${group.score}</div>
+            </div>
+          </div>
+          <div class="presenter-actions">
+            <button class="mini-pill-btn mini-pill-soft" data-presentpoint="1" data-id="${group.id}">+1</button>
+            <button class="mini-pill-btn mini-pill-soft" data-presentpoint="5" data-id="${group.id}">+5</button>
+            <button class="mini-pill-btn mini-pill-orange" data-presentpoint="10" data-id="${group.id}">+10</button>
+            <button class="mini-pill-btn mini-pill-red" data-presentpoint="-5" data-id="${group.id}">-5</button>
+          </div>
+        `;
+        box.appendChild(item);
+      });
+
+      box.querySelectorAll("[data-presentpoint]").forEach((btn) => {
+        btn.addEventListener("click", () => updateGroupScore(Number(btn.dataset.id), Number(btn.dataset.presentpoint)));
       });
     }
 
@@ -717,15 +906,25 @@
     function renderPresentationMode() {
       document.body.classList.toggle("presentation-mode", state.presentationMode);
       $("presentationBtn").textContent = state.presentationMode ? "Yönetim Modu" : "Sunum Modu";
+      presenterToolbar.classList.toggle("show", state.presentationMode);
     }
 
     function renderAll() {
       renderTheme();
       renderPresentationMode();
       renderQuestions();
+      renderPresenterQuestions();
       renderStage();
       renderGroups();
+      renderPresenterGroups();
       renderScoreboard();
+    }
+
+    function publishQuestion(index) {
+      state.activeQuestionIndex = index;
+      state.answerVisible = false;
+      hideAnnouncements();
+      renderAll();
     }
 
     async function addQuestion() {
@@ -751,7 +950,7 @@
 
     $("addQuestionBtn").addEventListener("click", addQuestion);
 
-    $("nextQuestionBtn").addEventListener("click", () => {
+    function goNextQuestion() {
       if (!state.questions.length) return;
       if (state.activeQuestionIndex < state.questions.length - 1) {
         state.activeQuestionIndex += 1;
@@ -761,21 +960,30 @@
       state.answerVisible = false;
       hideAnnouncements();
       renderAll();
-    });
+    }
 
-    $("showAnswerBtn").addEventListener("click", () => {
+    $("nextQuestionBtn").addEventListener("click", goNextQuestion);
+    $("presenterNextQuestionBtn").addEventListener("click", goNextQuestion);
+
+    function toggleAnswer() {
       if (state.activeQuestionIndex === -1) {
         alert("Önce bir soru yayınla.");
         return;
       }
       state.answerVisible = !state.answerVisible;
       renderStage();
-    });
+    }
 
-    $("announceWinnerBtn").addEventListener("click", () => {
+    $("showAnswerBtn").addEventListener("click", toggleAnswer);
+    $("presenterToggleAnswerBtn").addEventListener("click", toggleAnswer);
+
+    function showWinner() {
       renderWinner();
       winnerBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    });
+    }
+
+    $("announceWinnerBtn").addEventListener("click", showWinner);
+    $("presenterWinnerBtn").addEventListener("click", showWinner);
 
     $("themeBtn").addEventListener("click", () => {
       state.dark = !state.dark;
@@ -784,6 +992,11 @@
 
     $("presentationBtn").addEventListener("click", () => {
       state.presentationMode = !state.presentationMode;
+      renderPresentationMode();
+    });
+
+    $("closePresenterBtn").addEventListener("click", () => {
+      state.presentationMode = false;
       renderPresentationMode();
     });
 
