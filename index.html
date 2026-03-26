@@ -192,6 +192,24 @@
 
     .stage-inner { padding: 24px; }
 
+    .presentation-controls {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(15,23,42,0.95);
+      padding: 12px;
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    body.presentation-mode .presentation-controls {
+      display: flex;
+    }
+
     .stage-head {
       display: flex;
       gap: 10px;
@@ -326,292 +344,7 @@
     .winner-title { margin: 0; font-size: clamp(30px, 3vw, 44px); font-weight: 900; }
     .winner-sub { margin-top: 10px; font-size: 22px; font-weight: 800; }
 
-    .presenter-toggle {
-      display: none;
-      position: fixed;
-      right: 16px;
-      bottom: 16px;
-      z-index: 10000;
-      border: none;
-      border-radius: 999px;
-      background: rgba(249,115,22,.96);
-      color: white;
-      padding: 14px 18px;
-      font-weight: 900;
-      box-shadow: 0 18px 36px rgba(0,0,0,.28);
-      cursor: pointer;
-    }
-
-    .presenter-toggle.show { display: block; }
-
-    .presenter-toolbar {
-      display: none;
-      position: fixed;
-      left: 16px;
-      right: 16px;
-      bottom: 16px;
-      max-width: 1280px;
-      margin: 0 auto;
-      background: rgba(15,23,42,.97);
-      color: white;
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 26px;
-      box-shadow: 0 24px 48px rgba(0,0,0,.38);
-      z-index: 9999;
-      overflow: hidden;
-    }
-
-    .presenter-toolbar.show { display: block; }
-
-    .presenter-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 14px 16px;
-      background: rgba(249,115,22,.14);
-      border-bottom: 1px solid rgba(255,255,255,.08);
-    }
-
-    .presenter-head h3 { margin: 0; font-size: 18px; }
-
-    .presenter-body {
-      padding: 16px;
-      display: grid;
-      grid-template-columns: 1.15fr 1fr 1fr;
-      gap: 14px;
-      max-height: 46vh;
-      overflow: auto;
-    }
-
-    .presenter-card {
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 20px;
-      padding: 12px;
-      background: rgba(255,255,255,.04);
-      min-width: 0;
-    }
-
-    .presenter-mini-title {
-      font-size: 13px;
-      color: #cbd5e1;
-      font-weight: 800;
-      margin-bottom: 8px;
-    }
-
-    .presenter-grid {
-      display: grid;
-      gap: 8px;
-      max-height: 28vh;
-      overflow: auto;
-    }
-
-    .presenter-question-item,
-    .presenter-group-item {
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 18px;
-      padding: 12px;
-      background: rgba(255,255,255,.04);
-    }
-
-    .presenter-question-item.active {
-      border-color: rgba(249,115,22,.55);
-      background: rgba(249,115,22,.12);
-    }
-
-    .presenter-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .presenter-name {
-      font-weight: 900;
-      font-size: 16px;
-    }
-
-    .presenter-sub {
-      font-size: 12px;
-      color: #cbd5e1;
-      margin-top: 4px;
-      line-height: 1.35;
-    }
-
-    .presenter-actions {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
-
-    .mini-pill-btn {
-      border: none;
-      border-radius: 12px;
-      padding: 8px 10px;
-      cursor: pointer;
-      font-weight: 800;
-      font-size: 12px;
-    }
-
-    .mini-pill-orange { background: #f97316; color: white; }
-    .mini-pill-soft { background: #334155; color: white; }
-    .mini-pill-navy { background: #1d4ed8; color: white; }
-    .mini-pill-red { background: #ef4444; color: white; }
-
-    body.presentation-mode .hero,
-    body.presentation-mode .left-panel,
-    body.presentation-mode .right-panel {
-      display: none;
-    }
-
-    body.presentation-mode .layout {
-      grid-template-columns: 1fr;
-    }
-
-    body.presentation-mode .container {
-      max-width: 100%;
-      padding: 0;
-    }
-
-    body.presentation-mode .stage {
-      position: static;
-      min-height: 100vh;
-      border-radius: 0;
-      top: 0;
-      box-shadow: none;
-    }
-
-    body.presentation-mode .stage-inner {
-      padding: 34px;
-      padding-bottom: 36px;
-    }
-
-    @media (max-width: 1300px) {
-      .layout { grid-template-columns: 1fr; }
-      .stage { position: static; min-height: auto; }
-      .presenter-body { grid-template-columns: 1fr; max-height: 62vh; }
-    }
-
-    @media (max-width: 760px) {
-      .container { padding: 12px; }
-      .section, .hero { padding: 16px; }
-      .two-col { grid-template-columns: 1fr; }
-      .groups-add { grid-template-columns: 1fr; }
-      .score-actions { grid-template-columns: repeat(2, 1fr); }
-      .score-entry.rank-2, .score-entry.rank-3, .score-entry.rank-other { margin-left: 0; }
-      body.presentation-mode .stage-inner { padding: 18px; padding-bottom: 24px; }
-      .presenter-toolbar { left: 10px; right: 10px; bottom: 10px; }
-      .presenter-toggle { right: 10px; bottom: 10px; }
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <section class="card hero">
-      <div class="hero-row">
-        <div>
-          <div class="eyebrow">🏆 İsabet Okulları</div>
-          <h1>İsabet Okulları Skor Tablosu</h1>
-          <p>
-            Soruları cevaplarıyla birlikte sisteme yükle, sırayla yayınla, yanda skor tablosunu gör,
-            2 ile 15 grup arasında yarışmayı yönet ve puan ekledikçe sıralamanın anında değişmesini sağla.
-          </p>
-        </div>
-        <div class="actions">
-          <button class="btn btn-orange" id="showAnswerBtn">Cevabı Göster</button>
-          <button class="btn btn-navy" id="announceWinnerBtn">Kazananı Açıkla</button>
-          <button class="btn btn-soft" id="presentationBtn">Sunum Modu</button>
-          <button class="btn btn-soft" id="fullscreenBtn">Tam Ekran</button>
-          <button class="btn btn-soft" id="themeBtn">Koyu Tema</button>
-          <button class="btn btn-soft" id="resetBtn">Puanları Sıfırla</button>
-          <button class="btn btn-orange" id="shareBtn">Link Oluştur</button>
-        </div>
-      </div>
-      <div class="info-box" id="shareBox"></div>
-    </section>
-
-    <div class="layout">
-      <section class="card section left-panel">
-        <h2>Soru Havuzu</h2>
-        <div class="question-manager">
-          <div class="field">
-            <label for="newQuestionTitle">Soru Başlığı</label>
-            <input id="newQuestionTitle" type="text" placeholder="Örnek: Soru 1" />
-          </div>
-          <div class="field">
-            <label for="newQuestionText">Soru Metni</label>
-            <textarea id="newQuestionText" placeholder="Soruyu buraya yaz"></textarea>
-          </div>
-          <div class="field">
-            <label for="newAnswerText">Doğru Cevap</label>
-            <input id="newAnswerText" type="text" placeholder="Doğru cevabı yaz" />
-          </div>
-          <div class="field">
-            <label for="newQuestionImage">Soru Görseli</label>
-            <input id="newQuestionImage" type="file" accept="image/*" />
-          </div>
-          <div class="field">
-            <label for="newAnswerImage">Cevap Görseli</label>
-            <input id="newAnswerImage" type="file" accept="image/*" />
-          </div>
-          <div class="two-col">
-            <button class="btn btn-orange" id="addQuestionBtn">Soruyu Havuza Ekle</button>
-            <button class="btn btn-soft" id="nextQuestionBtn">Sıradaki Soruyu Yayınla</button>
-          </div>
-        </div>
-
-        <div style="margin-top:16px;" class="question-list" id="questionList"></div>
-      </section>
-
-      <section class="stage" id="stage">
-        <div class="stage-inner">
-          <div class="stage-head">
-            <div class="pill pill-dark" id="stageQuestionTitle">Soru seçilmedi</div>
-            <div class="pill pill-orange">İsabet Okulları</div>
-          </div>
-
-          <div class="question-box">
-            <div class="question-label">Yayınlanan Soru</div>
-            <div class="question-text" id="stageQuestionText">Henüz soru yayınlanmadı.</div>
-            <div class="question-image-wrap" id="stageQuestionImageWrap">
-              <img class="question-image" id="stageQuestionImage" alt="Soru görseli" />
-            </div>
-          </div>
-
-          <div class="answer-box" id="answerBox">
-            <div class="answer-label">Doğru Cevap</div>
-            <div class="answer-text" id="stageAnswerText">-</div>
-            <div class="answer-image-wrap" id="stageAnswerImageWrap">
-              <img class="answer-image" id="stageAnswerImage" alt="Cevap görseli" />
-            </div>
-          </div>
-
-          <div class="announce-box" id="announceBox">Grup A, tebrikler! 10 puan kazandınız.</div>
-
-          <div class="winner-box" id="winnerBox">
-            <h3 class="winner-title" id="winnerTitle">Tebrikler, kazandınız!</h3>
-            <div class="winner-sub" id="winnerSub">Grup A • 10 puan</div>
-          </div>
-        </div>
-      </section>
-
-      <section class="card section right-panel">
-        <h2>Grup ve Skor Yönetimi</h2>
-        <div class="groups-add">
-          <input id="newGroupName" type="text" placeholder="Yeni grup adı gir" />
-          <button class="btn btn-orange" id="addGroupBtn">Grup Ekle</button>
-        </div>
-        <div class="group-count" id="groupCountText">En az 2, en fazla 15 grup önerilir.</div>
-
-        <div style="margin-top:14px;" class="groups-list" id="groupsList"></div>
-
-        <h2 style="margin-top:22px;">Canlı Skor Tablosu</h2>
-        <div class="score-list" id="scoreList"></div>
-      </section>
-    </div>
-  </div>
+    .
 
   <button class="presenter-toggle" id="presenterToggleBtn">Kontrol Paneli</button>
 
@@ -640,6 +373,11 @@
         <div class="presenter-grid" id="presenterGroupList"></div>
       </div>
     </div>
+  </div>
+
+  <div class="presentation-controls">
+    <button class="btn btn-orange" id="presentNext">➡️ Sıradaki Soru</button>
+    <button class="btn btn-soft" id="presentAnswer">👁️ Cevap</button>
   </div>
 
   <script>
@@ -733,7 +471,7 @@
 
       answerBox.style.display = state.answerVisible && active ? "block" : "none";
       $("showAnswerBtn").textContent = state.answerVisible ? "Cevabı Gizle" : "Cevabı Göster";
-      $("presenterToggleAnswerBtn").textContent = state.answerVisible ? "Cevabı Kapat" : "Cevabı Aç";
+      
     }
 
     function renderQuestions() {
@@ -942,8 +680,6 @@
     function renderPresentationMode() {
       document.body.classList.toggle("presentation-mode", state.presentationMode);
       $("presentationBtn").textContent = state.presentationMode ? "Yönetim Modu" : "Sunum Modu";
-      presenterToggleBtn.classList.toggle("show", state.presentationMode);
-      presenterToolbar.classList.toggle("show", state.presentationMode && state.presenterOpen);
     }
 
     function renderAll() {
@@ -1000,7 +736,7 @@
     }
 
     $("nextQuestionBtn").addEventListener("click", goNextQuestion);
-    $("presenterNextQuestionBtn").addEventListener("click", goNextQuestion);
+    
 
     function toggleAnswer() {
       if (state.activeQuestionIndex === -1) {
@@ -1012,7 +748,11 @@
     }
 
     $("showAnswerBtn").addEventListener("click", toggleAnswer);
-    $("presenterToggleAnswerBtn").addEventListener("click", toggleAnswer);
+
+    $("presentAnswer").addEventListener("click", toggleAnswer);
+
+    $("presentNext").addEventListener("click", goNextQuestion);
+    
 
     function showWinner() {
       renderWinner();
@@ -1020,7 +760,7 @@
     }
 
     $("announceWinnerBtn").addEventListener("click", showWinner);
-    $("presenterWinnerBtn").addEventListener("click", showWinner);
+    
 
     $("themeBtn").addEventListener("click", () => {
       state.dark = !state.dark;
@@ -1029,7 +769,6 @@
 
     $("presentationBtn").addEventListener("click", () => {
       state.presentationMode = !state.presentationMode;
-      state.presenterOpen = state.presentationMode;
       renderPresentationMode();
     });
 
