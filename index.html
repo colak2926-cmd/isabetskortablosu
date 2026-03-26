@@ -41,6 +41,8 @@
       transition: 0.25s ease;
     }
 
+    .hidden { display: none !important; }
+
     .container {
       max-width: 1500px;
       margin: 0 auto;
@@ -110,9 +112,8 @@
     .btn-navy { background: var(--navy); color: #fff; }
     .btn-soft { background: var(--soft-2); color: var(--text); }
     .btn-danger { background: #ef4444; color: #fff; }
-    .btn-success { background: var(--success); color: #fff; }
 
-    .info-box, .toast {
+    .info-box {
       display: none;
       margin-top: 14px;
       border-radius: 18px;
@@ -224,6 +225,22 @@
     .question-label, .answer-label { color: #cbd5e1; font-weight: 800; font-size: 24px; }
     .question-text { margin-top: 12px; font-size: clamp(30px, 3vw, 48px); line-height: 1.2; font-weight: 900; }
 
+    .question-image-wrap, .answer-image-wrap {
+      margin-top: 18px;
+      display: none;
+      justify-content: center;
+    }
+
+    .question-image, .answer-image {
+      max-width: 100%;
+      max-height: 280px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,.14);
+      object-fit: contain;
+      background: rgba(255,255,255,.04);
+      padding: 8px;
+    }
+
     .answer-box {
       display: none;
       margin-top: 16px;
@@ -313,6 +330,33 @@
     .winner-title { margin: 0; font-size: clamp(30px, 3vw, 44px); font-weight: 900; }
     .winner-sub { margin-top: 10px; font-size: 22px; font-weight: 800; }
 
+    body.presentation-mode .hero,
+    body.presentation-mode .left-panel,
+    body.presentation-mode .right-panel {
+      display: none;
+    }
+
+    body.presentation-mode .layout {
+      grid-template-columns: 1fr;
+    }
+
+    body.presentation-mode .container {
+      max-width: 100%;
+      padding: 0;
+    }
+
+    body.presentation-mode .stage {
+      position: static;
+      min-height: 100vh;
+      border-radius: 0;
+      top: 0;
+      box-shadow: none;
+    }
+
+    body.presentation-mode .stage-inner {
+      padding: 34px;
+    }
+
     @media (max-width: 1300px) {
       .layout { grid-template-columns: 1fr; }
       .stage { position: static; min-height: auto; }
@@ -325,6 +369,7 @@
       .groups-add { grid-template-columns: 1fr; }
       .score-actions { grid-template-columns: repeat(2, 1fr); }
       .score-entry.rank-2, .score-entry.rank-3, .score-entry.rank-other { margin-left: 0; }
+      body.presentation-mode .stage-inner { padding: 18px; }
     }
   </style>
 </head>
@@ -343,6 +388,8 @@
         <div class="actions">
           <button class="btn btn-orange" id="showAnswerBtn">Cevabı Göster</button>
           <button class="btn btn-navy" id="announceWinnerBtn">Kazananı Açıkla</button>
+          <button class="btn btn-soft" id="presentationBtn">Sunum Modu</button>
+          <button class="btn btn-soft" id="fullscreenBtn">Tam Ekran</button>
           <button class="btn btn-soft" id="themeBtn">Koyu Tema</button>
           <button class="btn btn-soft" id="resetBtn">Puanları Sıfırla</button>
           <button class="btn btn-orange" id="shareBtn">Link Oluştur</button>
@@ -352,7 +399,7 @@
     </section>
 
     <div class="layout">
-      <section class="card section">
+      <section class="card section left-panel">
         <h2>Soru Havuzu</h2>
         <div class="question-manager">
           <div class="field">
@@ -367,8 +414,16 @@
             <label for="newAnswerText">Doğru Cevap</label>
             <input id="newAnswerText" type="text" placeholder="Doğru cevabı yaz" />
           </div>
+          <div class="field">
+            <label for="newQuestionImage">Soru Görseli</label>
+            <input id="newQuestionImage" type="file" accept="image/*" />
+          </div>
+          <div class="field">
+            <label for="newAnswerImage">Cevap Görseli</label>
+            <input id="newAnswerImage" type="file" accept="image/*" />
+          </div>
           <div class="two-col">
-            <button class="btn btn-orange" id="addQuestionBtn">Soruyu Havuze Ekle</button>
+            <button class="btn btn-orange" id="addQuestionBtn">Soruyu Havuza Ekle</button>
             <button class="btn btn-soft" id="nextQuestionBtn">Sıradaki Soruyu Yayınla</button>
           </div>
         </div>
@@ -386,11 +441,17 @@
           <div class="question-box">
             <div class="question-label">Yayınlanan Soru</div>
             <div class="question-text" id="stageQuestionText">Henüz soru yayınlanmadı.</div>
+            <div class="question-image-wrap" id="stageQuestionImageWrap">
+              <img class="question-image" id="stageQuestionImage" alt="Soru görseli" />
+            </div>
           </div>
 
           <div class="answer-box" id="answerBox">
             <div class="answer-label">Doğru Cevap</div>
             <div class="answer-text" id="stageAnswerText">-</div>
+            <div class="answer-image-wrap" id="stageAnswerImageWrap">
+              <img class="answer-image" id="stageAnswerImage" alt="Cevap görseli" />
+            </div>
           </div>
 
           <div class="announce-box" id="announceBox">Grup A, tebrikler! 10 puan kazandınız.</div>
@@ -402,7 +463,7 @@
         </div>
       </section>
 
-      <section class="card section">
+      <section class="card section right-panel">
         <h2>Grup ve Skor Yönetimi</h2>
         <div class="groups-add">
           <input id="newGroupName" type="text" placeholder="Yeni grup adı gir" />
@@ -422,12 +483,15 @@
     const state = {
       dark: false,
       answerVisible: false,
+      presentationMode: false,
       activeQuestionIndex: -1,
       questions: [
         {
           title: "Soru 1",
           text: "Bir üçgenin iç açılarının toplamı kaç derecedir?",
-          answer: "180°"
+          answer: "180°",
+          questionImage: "",
+          answerImage: ""
         }
       ],
       groups: [
@@ -454,6 +518,19 @@
         .replaceAll("'", "&#039;");
     }
 
+    function readFileAsDataUrl(file) {
+      return new Promise((resolve) => {
+        if (!file) {
+          resolve("");
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result || "");
+        reader.onerror = () => resolve("");
+        reader.readAsDataURL(file);
+      });
+    }
+
     function getActiveQuestion() {
       return state.questions[state.activeQuestionIndex] || null;
     }
@@ -467,6 +544,27 @@
       $("stageQuestionTitle").textContent = active ? active.title : "Soru seçilmedi";
       $("stageQuestionText").textContent = active ? active.text : "Henüz soru yayınlanmadı.";
       $("stageAnswerText").textContent = active ? active.answer : "-";
+
+      const qWrap = $("stageQuestionImageWrap");
+      const qImg = $("stageQuestionImage");
+      if (active && active.questionImage) {
+        qImg.src = active.questionImage;
+        qWrap.style.display = "flex";
+      } else {
+        qImg.removeAttribute("src");
+        qWrap.style.display = "none";
+      }
+
+      const aWrap = $("stageAnswerImageWrap");
+      const aImg = $("stageAnswerImage");
+      if (active && active.answerImage) {
+        aImg.src = active.answerImage;
+        aWrap.style.display = "flex";
+      } else {
+        aImg.removeAttribute("src");
+        aWrap.style.display = "none";
+      }
+
       answerBox.style.display = state.answerVisible && active ? "block" : "none";
       $("showAnswerBtn").textContent = state.answerVisible ? "Cevabı Gizle" : "Cevabı Göster";
     }
@@ -549,9 +647,7 @@
           const target = state.groups.find((g) => g.id === id);
           if (!target) return;
           target.score = Math.max(0, target.score + point);
-          if (point > 0) {
-            showPointAnnouncement(target.name, point);
-          }
+          if (point > 0) showPointAnnouncement(target.name, point);
           renderAll();
         });
       });
@@ -618,15 +714,21 @@
       $("themeBtn").textContent = state.dark ? "Açık Tema" : "Koyu Tema";
     }
 
+    function renderPresentationMode() {
+      document.body.classList.toggle("presentation-mode", state.presentationMode);
+      $("presentationBtn").textContent = state.presentationMode ? "Yönetim Modu" : "Sunum Modu";
+    }
+
     function renderAll() {
       renderTheme();
+      renderPresentationMode();
       renderQuestions();
       renderStage();
       renderGroups();
       renderScoreboard();
     }
 
-    $("addQuestionBtn").addEventListener("click", () => {
+    async function addQuestion() {
       const title = $("newQuestionTitle").value.trim();
       const text = $("newQuestionText").value.trim();
       const answer = $("newAnswerText").value.trim();
@@ -634,12 +736,20 @@
         alert("Soru başlığı, soru metni ve cevap alanını doldur.");
         return;
       }
-      state.questions.push({ title, text, answer });
+
+      const questionImage = await readFileAsDataUrl($("newQuestionImage").files[0]);
+      const answerImage = await readFileAsDataUrl($("newAnswerImage").files[0]);
+
+      state.questions.push({ title, text, answer, questionImage, answerImage });
       $("newQuestionTitle").value = "";
       $("newQuestionText").value = "";
       $("newAnswerText").value = "";
+      $("newQuestionImage").value = "";
+      $("newAnswerImage").value = "";
       renderAll();
-    });
+    }
+
+    $("addQuestionBtn").addEventListener("click", addQuestion);
 
     $("nextQuestionBtn").addEventListener("click", () => {
       if (!state.questions.length) return;
@@ -672,6 +782,23 @@
       renderTheme();
     });
 
+    $("presentationBtn").addEventListener("click", () => {
+      state.presentationMode = !state.presentationMode;
+      renderPresentationMode();
+    });
+
+    $("fullscreenBtn").addEventListener("click", async () => {
+      try {
+        if (!document.fullscreenElement) {
+          await document.documentElement.requestFullscreen();
+        } else {
+          await document.exitFullscreen();
+        }
+      } catch (error) {
+        console.error("Tam ekran açılamadı", error);
+      }
+    });
+
     $("resetBtn").addEventListener("click", () => {
       state.groups = state.groups.map((g) => ({ ...g, score: 0 }));
       hideAnnouncements();
@@ -701,6 +828,7 @@
       const payload = {
         dark: state.dark,
         answerVisible: state.answerVisible,
+        presentationMode: state.presentationMode,
         activeQuestionIndex: state.activeQuestionIndex,
         questions: state.questions,
         groups: state.groups,
@@ -725,6 +853,7 @@
         const parsed = JSON.parse(decodeURIComponent(escape(atob(raw))));
         if (typeof parsed.dark === "boolean") state.dark = parsed.dark;
         if (typeof parsed.answerVisible === "boolean") state.answerVisible = parsed.answerVisible;
+        if (typeof parsed.presentationMode === "boolean") state.presentationMode = parsed.presentationMode;
         if (typeof parsed.activeQuestionIndex === "number") state.activeQuestionIndex = parsed.activeQuestionIndex;
         if (Array.isArray(parsed.questions)) state.questions = parsed.questions;
         if (Array.isArray(parsed.groups)) state.groups = parsed.groups;
