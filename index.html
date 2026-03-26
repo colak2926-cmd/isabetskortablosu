@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>İsabet Okulları Skor Tablosu</title>
+  <style>
+    :root {
+      --orange: #f97316;
+      --orange-soft: #ffedd5;
+      --navy: #0f172a;
+      --navy-2: #1e293b;
+      --blue-soft: #e2e8f0;
+      --white: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --bg: #f8fafc;
+      --shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
+    }
+
+    body.dark {
+      --text: #f8fafc;
+      --muted: #cbd5e1;
+      --card: #0f172a;
+      --border: #334155;
+      --bg: #020617;
+      --blue-soft: #1e293b;
+      --orange-soft: rgba(249, 115, 22, 0.12);
+      --shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    .wrap {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      transition: 0.25s ease;
+    }
+
+    .hero {
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+
+    .hero-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(30px, 5vw, 54px);
+      line-height: 1.05;
+    }
+
+    .hero p {
+      margin: 12px 0 0;
+      color: var(--muted);
+      max-width: 760px;
+      line-height: 1.6;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button, input, textarea {
+      font: inherit;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 18px;
+      padding: 13px 16px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: transform 0.15s ease, opacity 0.2s ease, background 0.2s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    .btn-orange {
+      background: var(--orange);
+      color: white;
+    }
+
+    .btn-navy {
+      background: var(--navy);
+      color: white;
+    }
+
+    .btn-soft {
+      background: var(--blue-soft);
+      color: var(--text);
+    }
+
+    .share-box {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: var(--orange-soft);
+      border: 1px solid rgba(249,115,22,0.18);
+      color: var(--text);
+      display: none;
+      word-break: break-word;
+    }
+
+    .winner {
+      display: none;
+      padding: 28px;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, var(--orange-soft), var(--card));
+      border: 1px solid rgba(249,115,22,0.22);
+      text-align: center;
+      animation: pop 0.35s ease;
+    }
+
+    @keyframes pop {
+      from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .winner-title {
+      font-size: clamp(28px, 4vw, 46px);
+      font-weight: 900;
+      margin: 0;
+    }
+
+    .winner-sub {
+      margin-top: 10px;
+      font-size: clamp(18px, 2.4vw, 28px);
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.6fr 1fr;
+      gap: 20px;
+    }
+
+    .left-col, .right-col {
+      display: grid;
+      gap: 20px;
+    }
+
+    .section {
+      padding: 24px;
+    }
+
+    .section h2 {
+      margin: 0 0 18px;
+      font-size: 28px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    input, textarea {
+      width: 100%;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      padding: 14px 16px;
+      background: var(--card);
+      color: var(--text);
+      outline: none;
+    }
+
+    textarea {
+      min-height: 130px;
+      resize: vertical;
+    }
+
+    .screen {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: white;
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .screen-inner {
+      padding: 28px;
+    }
+
+    .screen-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .pill {
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .pill-dark { background: rgba(255,255,255,0.1); color: white; }
+    .pill-orange { background: rgba(249,115,22,0.18); color: #fdba74; }
+
+    .question-box, .answer-box {
+      border-radius: 28px;
+      padding: 24px;
+    }
+
+    .question-box {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      min-height: 220px;
+    }
+
+    .question-label, .answer-label {
+      font-size: 24px;
+      font-weight: 800;
+      color: #cbd5e1;
+      margin-bottom: 12px;
+    }
+
+    .question-text {
+      font-size: clamp(28px, 4vw, 48px);
+      line-height: 1.2;
+      font-weight: 900;
+    }
+
+    .answer-box {
+      margin-top: 16px;
+      border: 1px solid rgba(249,115,22,0.28);
+      background: rgba(249,115,22,0.12);
+      display: none;
+    }
+
+    .answer-text {
+      font-size: clamp(24px, 3vw, 34px);
+      font-weight: 900;
+      margin-top: 10px;
+    }
+
+    .group-add {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .group-list, .score-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .group-item {
+      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--card) 85%, var(--blue-soft));
+      border-radius: 22px;
+      padding: 16px;
+    }
+
+    .group-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .group-name {
+      font-size: 20px;
+      font-weight: 800;
+      margin: 0;
+    }
+
+    .group-score-label {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .mini-btn {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 800;
+      cursor: pointer;
+      border-radius: 12px;
+      padding: 8px 10px;
+    }
+
+    .mini-btn:hover { background: var(--blue-soft); }
+
+    .score-actions {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .score-entry {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      border-radius: 24px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+      transition: 0.2s ease;
+    }
+
+    .score-entry.rank-1 {
+      margin-left: 0;
+      border-color: rgba(249,115,22,0.3);
+      background: linear-gradient(135deg, var(--orange-soft), var(--card));
+      transform: scale(1.01);
+    }
+
+    .score-entry.rank-2 { margin-left: 18px; }
+    .score-entry.rank-3 { margin-left: 36px; }
+    .score-entry.rank-other { margin-left: 54px; }
+
+    .rank-box {
+      width: 46px;
+      height: 46px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      background: var(--blue-soft);
+      color: var(--text);
+      flex-shrink: 0;
+    }
+
+    .rank-1 .rank-box {
+      background: #fed7aa;
+      color: #9a3412;
+    }
+
+    .score-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .score-meta p {
+      margin: 0;
+    }
+
+    .score-meta .name {
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .score-meta .state {
+      color: var(--muted);
+      margin-top: 4px;
+      font-size: 14px;
+    }
+
+    .score-value {
+      text-align: right;
+      font-weight: 900;
+      font-size: 28px;
+    }
+
+    .score-value span {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      margin-top: 2px;
+    }
+
+    .footer-note {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 1100px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 700px) {
+      .wrap { padding: 14px; }
+      .hero, .section, .winner { padding: 18px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .score-actions { grid-template-columns: repeat(2, 1fr); }
+      .score-entry.rank-2, .score-entry.rank-3, .score-entry.rank-other { margin-left: 0; }
+      .group-add { grid-template-columns: 1fr; }
+      .actions { width: 100%; }
+      .actions .btn { flex: 1 1 180px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="card hero">
+      <div class="hero-top">
+        <div>
+          <div class="eyebrow">🏆 İsabet Okulları</div>
+          <h1>İsabet Okulları Skor Tablosu</h1>
+          <p>
+            Soruyu yansıt, doğru cevabı göster, grup isimlerini ekle, puanları işle ve kazananı ekranda anında ilan et.
+            Açık ve koyu tema arasında geçiş yapabilir, tek bağlantıyla sistemi paylaşabilirsin.
+          </p>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-orange" id="toggleAnswerBtn">Cevabı Göster</button>
+          <button class="btn btn-soft" id="resetScoresBtn">Puanları Sıfırla</button>
+          <button class="btn btn-navy" id="announceWinnerBtn">Kazananı Açıkla</button>
+          <button class="btn btn-soft" id="themeBtn">Koyu Tema</button>
+          <button class="btn btn-orange" id="shareBtn">Link Oluştur</button>
+        </div>
+      </div>
+      <div class="share-box" id="shareBox"></div>
+    </section>
+
+    <section class="card winner" id="winnerBox">
+      <h2 class="winner-title" id="winnerTitle">Tebrikler, kazandınız!</h2>
+      <div class="winner-sub" id="winnerSub">Grup A • 10 puan</div>
+    </section>
+
+    <div class="layout">
+      <div class="left-col">
+        <section class="card section">
+          <h2>Soru Yönetimi</h2>
+          <div class="form-grid">
+            <div class="field">
+              <label for="questionTitle">Soru Başlığı</label>
+              <input id="questionTitle" type="text" value="Soru 1" />
+            </div>
+            <div class="field">
+              <label for="answerText">Doğru Cevap</label>
+              <input id="answerText" type="text" value="180°" />
+            </div>
+          </div>
+          <div class="field" style="margin-top:14px;">
+            <label for="questionText">Soru Metni</label>
+            <textarea id="questionText">Bir üçgenin iç açılarının toplamı kaç derecedir?</textarea>
+          </div>
+        </section>
+
+        <section class="screen">
+          <div class="screen-inner">
+            <div class="screen-top">
+              <div class="pill pill-dark" id="screenQuestionTitle">Soru 1</div>
+              <div class="pill pill-orange">İsabet Okulları</div>
+            </div>
+
+            <div class="question-box">
+              <div class="question-label">Soru</div>
+              <div class="question-text" id="screenQuestionText">Bir üçgenin iç açılarının toplamı kaç derecedir?</div>
+            </div>
+
+            <div class="answer-box" id="answerBox">
+              <div class="answer-label">Doğru Cevap</div>
+              <div class="answer-text" id="screenAnswerText">180°</div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="right-col">
+        <section class="card section">
+          <h2>Grup İsimleri ve Puanlama</h2>
+          <div class="group-add">
+            <input id="newGroupName" type="text" placeholder="Yeni grup adı" />
+            <button class="btn btn-orange" id="addGroupBtn">Grup Ekle</button>
+          </div>
+          <div class="group-list" id="groupList"></div>
+        </section>
+
+        <section class="card section">
+          <h2>Canlı Grup Skor Tablosu</h2>
+          <div class="score-list" id="scoreList"></div>
+          <div class="footer-note">
+            Bu sürüm tek dosyalık hazırlandı. GitHub Pages'e sadece bu dosyayı <strong>index.html</strong> adıyla yüklemen yeterli.
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const state = {
+      answerVisible: false,
+      groups: [
+        { id: 1, name: "Grup A", score: 0 },
+        { id: 2, name: "Grup B", score: 0 },
+        { id: 3, name: "Grup C", score: 0 },
+        { id: 4, name: "Grup D", score: 0 }
+      ]
+    };
+
+    const questionTitleInput = document.getElementById("questionTitle");
+    const questionTextInput = document.getElementById("questionText");
+    const answerTextInput = document.getElementById("answerText");
+    const screenQuestionTitle = document.getElementById("screenQuestionTitle");
+    const screenQuestionText = document.getElementById("screenQuestionText");
+    const screenAnswerText = document.getElementById("screenAnswerText");
+    const answerBox = document.getElementById("answerBox");
+    const toggleAnswerBtn = document.getElementById("toggleAnswerBtn");
+    const resetScoresBtn = document.getElementById("resetScoresBtn");
+    const announceWinnerBtn = document.getElementById("announceWinnerBtn");
+    const themeBtn = document.getElementById("themeBtn");
+    const addGroupBtn = document.getElementById("addGroupBtn");
+    const newGroupNameInput = document.getElementById("newGroupName");
+    const groupList = document.getElementById("groupList");
+    const scoreList = document.getElementById("scoreList");
+    const winnerBox = document.getElementById("winnerBox");
+    const winnerTitle = document.getElementById("winnerTitle");
+    const winnerSub = document.getElementById("winnerSub");
+    const shareBtn = document.getElementById("shareBtn");
+    const shareBox = document.getElementById("shareBox");
+
+    function syncQuestionScreen() {
+      screenQuestionTitle.textContent = questionTitleInput.value || "Soru";
+      screenQuestionText.textContent = questionTextInput.value || "Soru metni giriniz";
+      screenAnswerText.textContent = answerTextInput.value || "Cevap giriniz";
+    }
+
+    function sortGroups() {
+      return [...state.groups].sort((a, b) => b.score - a.score || a.name.localeCompare(b.name, "tr"));
+    }
+
+    function renderGroups() {
+      groupList.innerHTML = "";
+      const sortedBase = [...state.groups];
+
+      sortedBase.forEach((group) => {
+        const item = document.createElement("div");
+        item.className = "group-item";
+        item.innerHTML = `
+          <div class="group-row">
+            <div>
+              <p class="group-name">${escapeHtml(group.name)}</p>
+              <div class="group-score-label">Puan: ${group.score}</div>
+            </div>
+            <button class="mini-btn" data-remove="${group.id}">Sil</button>
+          </div>
+          <div class="score-actions">
+            <button class="btn btn-soft" data-score="-5" data-id="${group.id}">-5</button>
+            <button class="btn btn-soft" data-score="-1" data-id="${group.id}">-1</button>
+            <button class="btn btn-orange" data-score="1" data-id="${group.id}">+1</button>
+            <button class="btn btn-navy" data-score="5" data-id="${group.id}">+5</button>
+          </div>
+        `;
+        groupList.appendChild(item);
+      });
+
+      groupList.querySelectorAll("[data-score]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = Number(btn.dataset.id);
+          const amount = Number(btn.dataset.score);
+          const target = state.groups.find((g) => g.id === id);
+          if (!target) return;
+          target.score = Math.max(0, target.score + amount);
+          renderAll();
+        });
+      });
+
+      groupList.querySelectorAll("[data-remove]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = Number(btn.dataset.remove);
+          state.groups = state.groups.filter((g) => g.id !== id);
+          renderAll();
+        });
+      });
+    }
+
+    function renderScoreboard() {
+      scoreList.innerHTML = "";
+      const ranking = sortGroups();
+
+      ranking.forEach((group, index) => {
+        const row = document.createElement("div");
+        row.className = `score-entry ${index === 0 ? "rank-1" : index === 1 ? "rank-2" : index === 2 ? "rank-3" : "rank-other"}`;
+        row.innerHTML = `
+          <div class="score-left">
+            <div class="rank-box">${index + 1}</div>
+            <div class="score-meta">
+              <p class="name">${escapeHtml(group.name)}</p>
+              <p class="state">${index === 0 ? "Lider" : `${index + 1}. sırada`}</p>
+            </div>
+          </div>
+          <div class="score-value">${group.score}<span>PUAN</span></div>
+        `;
+        scoreList.appendChild(row);
+      });
+    }
+
+    function renderWinner() {
+      const ranking = sortGroups();
+      if (!ranking.length) {
+        winnerBox.style.display = "none";
+        return;
+      }
+      const top = ranking[0];
+      const hasSingleWinner = ranking.length === 1 || top.score > ranking[1].score;
+      winnerTitle.textContent = hasSingleWinner ? "Tebrikler, kazandınız!" : "Lider grup ekranda!";
+      winnerSub.textContent = `${top.name} • ${top.score} puan`;
+    }
+
+    function renderAnswerBox() {
+      answerBox.style.display = state.answerVisible ? "block" : "none";
+      toggleAnswerBtn.textContent = state.answerVisible ? "Cevabı Gizle" : "Cevabı Göster";
+    }
+
+    function renderAll() {
+      syncQuestionScreen();
+      renderGroups();
+      renderScoreboard();
+      renderWinner();
+      renderAnswerBox();
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    questionTitleInput.addEventListener("input", renderAll);
+    questionTextInput.addEventListener("input", renderAll);
+    answerTextInput.addEventListener("input", renderAll);
+
+    toggleAnswerBtn.addEventListener("click", () => {
+      state.answerVisible = !state.answerVisible;
+      renderAnswerBox();
+    });
+
+    resetScoresBtn.addEventListener("click", () => {
+      state.groups = state.groups.map((group) => ({ ...group, score: 0 }));
+      winnerBox.style.display = "none";
+      renderAll();
+    });
+
+    announceWinnerBtn.addEventListener("click", () => {
+      renderWinner();
+      winnerBox.style.display = "block";
+      winnerBox.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    themeBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      themeBtn.textContent = document.body.classList.contains("dark") ? "Açık Tema" : "Koyu Tema";
+    });
+
+    addGroupBtn.addEventListener("click", () => {
+      const name = newGroupNameInput.value.trim();
+      if (!name) return;
+      state.groups.push({ id: Date.now(), name, score: 0 });
+      newGroupNameInput.value = "";
+      renderAll();
+    });
+
+    newGroupNameInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        addGroupBtn.click();
+      }
+    });
+
+    shareBtn.addEventListener("click", async () => {
+      const payload = {
+        questionTitle: questionTitleInput.value,
+        questionText: questionTextInput.value,
+        answerText: answerTextInput.value,
+        groups: state.groups,
+        dark: document.body.classList.contains("dark")
+      };
+
+      const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+      const url = `${window.location.origin}${window.location.pathname}?state=${encoded}`;
+      shareBox.style.display = "block";
+      shareBox.innerHTML = `Oluşturulan bağlantı hazır: <strong>${escapeHtml(url)}</strong>`;
+
+      try {
+        await navigator.clipboard.writeText(url);
+        shareBox.innerHTML += "<br>Bağlantı panoya da kopyalandı.";
+      } catch (err) {
+        shareBox.innerHTML += "<br>Panoya kopyalama otomatik olmadı. Bağlantıyı elle kopyalayabilirsin.";
+      }
+    });
+
+    function loadFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const raw = params.get("state");
+      if (!raw) return;
+
+      try {
+        const parsed = JSON.parse(decodeURIComponent(escape(atob(raw))));
+        if (parsed.questionTitle) questionTitleInput.value = parsed.questionTitle;
+        if (parsed.questionText) questionTextInput.value = parsed.questionText;
+        if (parsed.answerText) answerTextInput.value = parsed.answerText;
+        if (Array.isArray(parsed.groups)) state.groups = parsed.groups;
+        if (parsed.dark) {
+          document.body.classList.add("dark");
+          themeBtn.textContent = "Açık Tema";
+        }
+      } catch (error) {
+        console.error("Bağlantı verisi okunamadı", error);
+      }
+    }
+
+    loadFromUrl();
+    renderAll();
+  </script>
+</body>
+</html>
