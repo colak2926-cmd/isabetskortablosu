@@ -554,6 +554,7 @@
           <button class="btn btn-orange" id="showAnswerBtn">Cevabı Göster</button>
           <button class="btn btn-navy" id="announceWinnerBtn">Kazananı Açıkla</button>
           <button class="btn btn-soft" id="presentationBtn">Sunum Modu</button>
+          <button class="btn btn-soft" id="homeBtn">Başlangıç Ekranı</button>
           <button class="btn btn-soft" id="fullscreenBtn">Tam Ekran</button>
           <button class="btn btn-soft" id="themeBtn">Koyu Tema</button>
           <button class="btn btn-soft" id="resetBtn">Puanları Sıfırla</button>
@@ -684,6 +685,7 @@
     <button class="btn btn-soft" id="presentAnswerBtn">👁️ Cevabı Göster</button>
     <button class="btn btn-soft" id="presentTimerBtn">⏯️ Sayaç</button>
     <button class="btn btn-navy" id="presentWinnerBtn">🏆 Kazanan</button>
+    <button class="btn btn-soft" id="presentHomeBtn">↩️ Başlangıç</button>
   </div>
 
   <script>
@@ -1178,6 +1180,18 @@
       state.presentationMode = !state.presentationMode;
       renderAll();
     });
+
+    function goHomeScreen() {
+      state.presentationMode = false;
+      state.answerVisible = false;
+      stopTimer(false);
+      hideAnnouncements();
+      renderAll();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    $('homeBtn').addEventListener('click', goHomeScreen);
+    $('presentHomeBtn').addEventListener('click', goHomeScreen);
 
     $('fullscreenBtn').addEventListener('click', async () => {
       try {
