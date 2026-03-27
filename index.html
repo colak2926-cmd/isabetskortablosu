@@ -93,7 +93,7 @@
       gap: 10px;
     }
 
-    button, input, textarea { font: inherit; }
+    button, input, textarea, select { font: inherit; }
 
     .btn {
       border: none;
@@ -111,6 +111,7 @@
     .btn-navy { background: var(--navy); color: #fff; }
     .btn-soft { background: var(--soft-2); color: var(--text); }
     .btn-danger { background: #ef4444; color: #fff; }
+    .btn-success { background: #16a34a; color: #fff; }
 
     .info-box {
       display: none;
@@ -120,6 +121,7 @@
       border: 1px solid var(--border);
       background: var(--soft);
       word-break: break-word;
+      line-height: 1.5;
     }
 
     .layout {
@@ -135,7 +137,7 @@
     .field { display: grid; gap: 8px; margin-bottom: 12px; }
     .field label { font-size: 14px; font-weight: 800; color: var(--muted); }
 
-    input, textarea {
+    input, textarea, select {
       width: 100%;
       border: 1px solid var(--border);
       background: var(--card);
@@ -148,6 +150,7 @@
     textarea { min-height: 100px; resize: vertical; }
 
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
     .question-list { display: grid; gap: 10px; max-height: 420px; overflow: auto; }
 
     .question-item {
@@ -173,6 +176,13 @@
       font-size: 14px;
       line-height: 1.45;
       margin: 0 0 10px;
+    }
+
+    .question-item-meta {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 10px;
+      font-weight: 700;
     }
 
     .question-item-actions {
@@ -212,6 +222,34 @@
 
     .pill-dark { background: rgba(255,255,255,.1); }
     .pill-orange { background: rgba(249,115,22,.18); color: #fdba74; }
+
+    .timer-strip {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding: 12px 16px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .timer-label {
+      color: #cbd5e1;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .timer-value {
+      font-size: clamp(28px, 3vw, 42px);
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    .timer-value.low-time {
+      color: #fca5a5;
+    }
 
     .question-box {
       min-height: 320px;
@@ -493,7 +531,7 @@
     @media (max-width: 760px) {
       .container { padding: 12px; }
       .section, .hero { padding: 16px; }
-      .two-col { grid-template-columns: 1fr; }
+      .two-col, .three-col { grid-template-columns: 1fr; }
       .groups-add { grid-template-columns: 1fr; }
       .score-actions { grid-template-columns: repeat(2, 1fr); }
       .score-entry.rank-2, .score-entry.rank-3, .score-entry.rank-other { margin-left: 0; }
@@ -508,7 +546,7 @@
           <div class="eyebrow">🏆 İsabet Okulları</div>
           <h1>İsabet Okulları Skor Tablosu</h1>
           <p>
-            Soruları cevaplarıyla birlikte sisteme yükle, sırayla yayınla, yanda skor tablosunu gör,
+            Soruları cevaplarıyla birlikte sisteme yükle, süre belirle, sırayla yayınla, yanda skor tablosunu gör,
             2 ile 15 grup arasında yarışmayı yönet ve puan ekledikçe sıralamanın anında değişmesini sağla.
           </p>
         </div>
@@ -520,6 +558,7 @@
           <button class="btn btn-soft" id="themeBtn">Koyu Tema</button>
           <button class="btn btn-soft" id="resetBtn">Puanları Sıfırla</button>
           <button class="btn btn-orange" id="shareBtn">Link Oluştur</button>
+          <button class="btn btn-success" id="clearStorageBtn">Kayıtları Sıfırla</button>
         </div>
       </div>
       <div class="info-box" id="shareBox"></div>
@@ -536,9 +575,36 @@
           <label for="newQuestionText">Soru Metni</label>
           <textarea id="newQuestionText" placeholder="Soruyu buraya yaz"></textarea>
         </div>
-        <div class="field">
-          <label for="newAnswerText">Doğru Cevap</label>
-          <input id="newAnswerText" type="text" placeholder="Doğru cevabı yaz" />
+        <div class="three-col">
+          <div class="field">
+            <label for="newAnswerText">Doğru Cevap</label>
+            <input id="newAnswerText" type="text" placeholder="Doğru cevabı yaz" />
+          </div>
+          <div class="field">
+            <label for="newQuestionMinutes">Süre (dakika)</label>
+            <select id="newQuestionMinutes">
+              <option value="0">Süresiz</option>
+              <option value="1">1 dk</option>
+              <option value="2">2 dk</option>
+              <option value="3">3 dk</option>
+              <option value="4">4 dk</option>
+              <option value="5">5 dk</option>
+              <option value="6">6 dk</option>
+              <option value="7">7 dk</option>
+              <option value="8">8 dk</option>
+              <option value="9">9 dk</option>
+              <option value="10">10 dk</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="newQuestionSeconds">Ek saniye</label>
+            <select id="newQuestionSeconds">
+              <option value="0">00 sn</option>
+              <option value="15">15 sn</option>
+              <option value="30">30 sn</option>
+              <option value="45">45 sn</option>
+            </select>
+          </div>
         </div>
         <div class="field">
           <label for="newQuestionImage">Soru Görseli</label>
@@ -560,6 +626,13 @@
           <div class="stage-head">
             <div class="pill pill-dark" id="stageQuestionTitle">Soru seçilmedi</div>
             <div class="pill pill-orange">İsabet Okulları</div>
+          </div>
+
+          <div class="timer-strip">
+            <div>
+              <div class="timer-label">Soru Süresi</div>
+            </div>
+            <div class="timer-value" id="stageTimer">--:--</div>
           </div>
 
           <div class="question-box">
@@ -609,60 +682,107 @@
   <div class="presentation-bar" id="presentationBar">
     <button class="btn btn-orange" id="presentNextBtn">➡️ Sıradaki Soru</button>
     <button class="btn btn-soft" id="presentAnswerBtn">👁️ Cevabı Göster</button>
+    <button class="btn btn-soft" id="presentTimerBtn">⏯️ Sayaç</button>
     <button class="btn btn-navy" id="presentWinnerBtn">🏆 Kazanan</button>
   </div>
 
   <script>
-    const state = {
+    const STORAGE_KEY = 'isabet_skor_tablosu_v3';
+    let countdownInterval = null;
+
+    const defaultState = {
       dark: false,
       answerVisible: false,
       presentationMode: false,
       activeQuestionIndex: -1,
+      timer: {
+        durationSeconds: 0,
+        remainingSeconds: 0,
+        running: false
+      },
       questions: [
         {
-          title: "Soru 1",
-          text: "Bir üçgenin iç açılarının toplamı kaç derecedir?",
-          answer: "180°",
-          questionImage: "",
-          answerImage: ""
+          id: Date.now(),
+          title: 'Soru 1',
+          text: 'Bir üçgenin iç açılarının toplamı kaç derecedir?',
+          answer: '180°',
+          questionImage: '',
+          answerImage: '',
+          durationSeconds: 60
         }
       ],
       groups: [
-        { id: 1, name: "Grup A", score: 0 },
-        { id: 2, name: "Grup B", score: 0 }
+        { id: 1, name: 'Grup A', score: 0 },
+        { id: 2, name: 'Grup B', score: 0 }
       ]
     };
 
+    const state = structuredClone(defaultState);
+
     const $ = (id) => document.getElementById(id);
-    const questionList = $("questionList");
-    const groupsList = $("groupsList");
-    const scoreList = $("scoreList");
-    const shareBox = $("shareBox");
-    const answerBox = $("answerBox");
-    const announceBox = $("announceBox");
-    const winnerBox = $("winnerBox");
-    const presentationScoreList = $("presentationScoreList");
+    const questionList = $('questionList');
+    const groupsList = $('groupsList');
+    const scoreList = $('scoreList');
+    const shareBox = $('shareBox');
+    const answerBox = $('answerBox');
+    const announceBox = $('announceBox');
+    const winnerBox = $('winnerBox');
+    const presentationScoreList = $('presentationScoreList');
 
     function escapeHtml(value) {
       return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
     }
 
     function readFileAsDataUrl(file) {
       return new Promise((resolve) => {
         if (!file) {
-          resolve("");
+          resolve('');
           return;
         }
         const reader = new FileReader();
-        reader.onload = () => resolve(reader.result || "");
-        reader.onerror = () => resolve("");
+        reader.onload = () => resolve(reader.result || '');
+        reader.onerror = () => resolve('');
         reader.readAsDataURL(file);
       });
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (error) {
+        console.error('Kayıt yapılamadı', error);
+      }
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (typeof parsed.dark === 'boolean') state.dark = parsed.dark;
+        if (typeof parsed.answerVisible === 'boolean') state.answerVisible = parsed.answerVisible;
+        if (typeof parsed.presentationMode === 'boolean') state.presentationMode = parsed.presentationMode;
+        if (typeof parsed.activeQuestionIndex === 'number') state.activeQuestionIndex = parsed.activeQuestionIndex;
+        if (parsed.timer && typeof parsed.timer === 'object') state.timer = parsed.timer;
+        if (Array.isArray(parsed.questions)) state.questions = parsed.questions;
+        if (Array.isArray(parsed.groups)) state.groups = parsed.groups;
+      } catch (error) {
+        console.error('Kayıt okunamadı', error);
+      }
+    }
+
+    function resetStorage() {
+      localStorage.removeItem(STORAGE_KEY);
+      stopTimer();
+      Object.assign(state, structuredClone(defaultState));
+      renderAll();
+      shareBox.style.display = 'block';
+      shareBox.innerHTML = 'Kaydedilmiş soru ve grup kayıtları sıfırlandı.';
     }
 
     function getActiveQuestion() {
@@ -670,38 +790,118 @@
     }
 
     function sortGroups() {
-      return [...state.groups].sort((a, b) => b.score - a.score || a.name.localeCompare(b.name, "tr"));
+      return [...state.groups].sort((a, b) => b.score - a.score || a.name.localeCompare(b.name, 'tr'));
+    }
+
+    function formatTime(totalSeconds) {
+      const safe = Math.max(0, totalSeconds || 0);
+      const mins = Math.floor(safe / 60).toString().padStart(2, '0');
+      const secs = (safe % 60).toString().padStart(2, '0');
+      return `${mins}:${secs}`;
+    }
+
+    function updateTimerUI() {
+      const timerEl = $('stageTimer');
+      const hasTimer = state.timer.durationSeconds > 0;
+      timerEl.textContent = hasTimer ? formatTime(state.timer.remainingSeconds) : '--:--';
+      timerEl.classList.toggle('low-time', hasTimer && state.timer.remainingSeconds <= 10 && state.timer.remainingSeconds > 0);
+      $('presentTimerBtn').textContent = state.timer.running ? '⏸️ Sayaç' : '⏯️ Sayaç';
+    }
+
+    function stopTimer(save = true) {
+      if (countdownInterval) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+      }
+      state.timer.running = false;
+      if (save) saveState();
+      updateTimerUI();
+    }
+
+    function startTimerFromQuestion(question) {
+      stopTimer(false);
+      const duration = Number(question?.durationSeconds || 0);
+      state.timer.durationSeconds = duration;
+      state.timer.remainingSeconds = duration;
+      state.timer.running = false;
+      updateTimerUI();
+      if (duration > 0) {
+        state.timer.running = true;
+        countdownInterval = setInterval(() => {
+          if (state.timer.remainingSeconds > 0) {
+            state.timer.remainingSeconds -= 1;
+            updateTimerUI();
+            saveState();
+          }
+          if (state.timer.remainingSeconds <= 0) {
+            stopTimer();
+            announceBox.style.display = 'block';
+            announceBox.textContent = 'Süre doldu!';
+            setTimeout(() => {
+              if (announceBox.textContent === 'Süre doldu!') announceBox.style.display = 'none';
+            }, 2500);
+          }
+        }, 1000);
+      }
+      saveState();
+    }
+
+    function toggleTimer() {
+      if (state.timer.durationSeconds <= 0) return;
+      if (state.timer.running) {
+        stopTimer();
+        return;
+      }
+      state.timer.running = true;
+      countdownInterval = setInterval(() => {
+        if (state.timer.remainingSeconds > 0) {
+          state.timer.remainingSeconds -= 1;
+          updateTimerUI();
+          saveState();
+        }
+        if (state.timer.remainingSeconds <= 0) {
+          stopTimer();
+          announceBox.style.display = 'block';
+          announceBox.textContent = 'Süre doldu!';
+          setTimeout(() => {
+            if (announceBox.textContent === 'Süre doldu!') announceBox.style.display = 'none';
+          }, 2500);
+        }
+      }, 1000);
+      saveState();
+      updateTimerUI();
     }
 
     function renderStage() {
       const active = getActiveQuestion();
-      $("stageQuestionTitle").textContent = active ? active.title : "Soru seçilmedi";
-      $("stageQuestionText").textContent = active ? active.text : "Henüz soru yayınlanmadı.";
-      $("stageAnswerText").textContent = active ? active.answer : "-";
+      $('stageQuestionTitle').textContent = active ? active.title : 'Soru seçilmedi';
+      $('stageQuestionText').textContent = active ? active.text : 'Henüz soru yayınlanmadı.';
+      $('stageAnswerText').textContent = active ? active.answer : '-';
 
-      const qWrap = $("stageQuestionImageWrap");
-      const qImg = $("stageQuestionImage");
+      const qWrap = $('stageQuestionImageWrap');
+      const qImg = $('stageQuestionImage');
       if (active && active.questionImage) {
         qImg.src = active.questionImage;
-        qWrap.style.display = "flex";
+        qWrap.style.display = 'flex';
       } else {
-        qImg.removeAttribute("src");
-        qWrap.style.display = "none";
+        qImg.removeAttribute('src');
+        qWrap.style.display = 'none';
       }
 
-      const aWrap = $("stageAnswerImageWrap");
-      const aImg = $("stageAnswerImage");
+      const aWrap = $('stageAnswerImageWrap');
+      const aImg = $('stageAnswerImage');
       if (active && active.answerImage) {
         aImg.src = active.answerImage;
-        aWrap.style.display = "flex";
+        aWrap.style.display = 'flex';
       } else {
-        aImg.removeAttribute("src");
-        aWrap.style.display = "none";
+        aImg.removeAttribute('src');
+        aWrap.style.display = 'none';
       }
 
-      answerBox.style.display = state.answerVisible && active ? "block" : "none";
-      $("showAnswerBtn").textContent = state.answerVisible ? "Cevabı Gizle" : "Cevabı Göster";
-      $("presentAnswerBtn").textContent = state.answerVisible ? "👁️ Cevabı Gizle" : "👁️ Cevabı Göster";
+      answerBox.style.display = state.answerVisible && active ? 'block' : 'none';
+      $('showAnswerBtn').textContent = state.answerVisible ? 'Cevabı Gizle' : 'Cevabı Göster';
+      $('presentAnswerBtn').textContent = state.answerVisible ? '👁️ Cevabı Gizle' : '👁️ Cevabı Göster';
+      updateTimerUI();
     }
 
     function publishQuestion(index) {
@@ -709,14 +909,16 @@
       state.answerVisible = false;
       hideAnnouncements();
       renderAll();
+      startTimerFromQuestion(getActiveQuestion());
     }
 
     function toggleAnswer() {
       if (state.activeQuestionIndex === -1) {
-        alert("Önce bir soru yayınla.");
+        alert('Önce bir soru yayınla.');
         return;
       }
       state.answerVisible = !state.answerVisible;
+      saveState();
       renderStage();
     }
 
@@ -730,6 +932,7 @@
       state.answerVisible = false;
       hideAnnouncements();
       renderAll();
+      startTimerFromQuestion(getActiveQuestion());
     }
 
     function updateGroupScore(id, point) {
@@ -741,17 +944,17 @@
     }
 
     function showPointAnnouncement(groupName, point) {
-      announceBox.style.display = "block";
+      announceBox.style.display = 'block';
       announceBox.textContent = `${groupName}, tebrikler! ${point} puan kazandınız.`;
       clearTimeout(showPointAnnouncement.timer);
       showPointAnnouncement.timer = setTimeout(() => {
-        announceBox.style.display = "none";
+        announceBox.style.display = 'none';
       }, 2500);
     }
 
     function hideAnnouncements() {
-      announceBox.style.display = "none";
-      winnerBox.style.display = "none";
+      announceBox.style.display = 'none';
+      winnerBox.style.display = 'none';
     }
 
     function renderWinner() {
@@ -759,18 +962,19 @@
       if (!ranking.length) return;
       const top = ranking[0];
       const hasSingleWinner = ranking.length === 1 || top.score > ranking[1].score;
-      $("winnerTitle").textContent = hasSingleWinner ? "Tebrikler, kazandınız!" : "Lider grup ekranda!";
-      $("winnerSub").textContent = `${top.name} • ${top.score} puan`;
-      winnerBox.style.display = "block";
+      $('winnerTitle').textContent = hasSingleWinner ? 'Tebrikler, kazandınız!' : 'Lider grup ekranda!';
+      $('winnerSub').textContent = `${top.name} • ${top.score} puan`;
+      winnerBox.style.display = 'block';
     }
 
     function renderQuestions() {
-      questionList.innerHTML = "";
+      questionList.innerHTML = '';
       state.questions.forEach((q, index) => {
-        const item = document.createElement("div");
-        item.className = `question-item ${index === state.activeQuestionIndex ? "active" : ""}`;
+        const item = document.createElement('div');
+        item.className = `question-item ${index === state.activeQuestionIndex ? 'active' : ''}`;
         item.innerHTML = `
           <div class="question-item-title">${escapeHtml(q.title)}</div>
+          <div class="question-item-meta">Süre: ${q.durationSeconds > 0 ? formatTime(q.durationSeconds) : 'Süresiz'}</div>
           <p class="question-item-text">${escapeHtml(q.text)}</p>
           <div class="question-item-actions">
             <button class="btn btn-soft" data-publish="${index}">Yayınla</button>
@@ -781,23 +985,29 @@
         questionList.appendChild(item);
       });
 
-      questionList.querySelectorAll("[data-publish]").forEach((btn) => {
-        btn.addEventListener("click", () => publishQuestion(Number(btn.dataset.publish)));
+      questionList.querySelectorAll('[data-publish]').forEach((btn) => {
+        btn.addEventListener('click', () => publishQuestion(Number(btn.dataset.publish)));
       });
 
-      questionList.querySelectorAll("[data-showanswer]").forEach((btn) => {
-        btn.addEventListener("click", () => {
+      questionList.querySelectorAll('[data-showanswer]').forEach((btn) => {
+        btn.addEventListener('click', () => {
           state.activeQuestionIndex = Number(btn.dataset.showanswer);
           state.answerVisible = true;
           renderAll();
+          startTimerFromQuestion(getActiveQuestion());
         });
       });
 
-      questionList.querySelectorAll("[data-deletequestion]").forEach((btn) => {
-        btn.addEventListener("click", () => {
+      questionList.querySelectorAll('[data-deletequestion]').forEach((btn) => {
+        btn.addEventListener('click', () => {
           const index = Number(btn.dataset.deletequestion);
           state.questions.splice(index, 1);
-          if (state.activeQuestionIndex === index) state.activeQuestionIndex = -1;
+          if (state.activeQuestionIndex === index) {
+            state.activeQuestionIndex = -1;
+            stopTimer(false);
+            state.timer.durationSeconds = 0;
+            state.timer.remainingSeconds = 0;
+          }
           if (state.activeQuestionIndex > index) state.activeQuestionIndex -= 1;
           hideAnnouncements();
           renderAll();
@@ -806,12 +1016,12 @@
     }
 
     function renderGroups() {
-      groupsList.innerHTML = "";
-      $("groupCountText").textContent = `${state.groups.length} grup var. En az 2, en fazla 15 grup kullanabilirsin.`;
+      groupsList.innerHTML = '';
+      $('groupCountText').textContent = `${state.groups.length} grup var. En az 2, en fazla 15 grup kullanabilirsin.`;
 
       state.groups.forEach((group) => {
-        const card = document.createElement("div");
-        card.className = "group-card";
+        const card = document.createElement('div');
+        card.className = 'group-card';
         card.innerHTML = `
           <div class="group-top">
             <div>
@@ -830,14 +1040,14 @@
         groupsList.appendChild(card);
       });
 
-      groupsList.querySelectorAll("[data-point]").forEach((btn) => {
-        btn.addEventListener("click", () => updateGroupScore(Number(btn.dataset.id), Number(btn.dataset.point)));
+      groupsList.querySelectorAll('[data-point]').forEach((btn) => {
+        btn.addEventListener('click', () => updateGroupScore(Number(btn.dataset.id), Number(btn.dataset.point)));
       });
 
-      groupsList.querySelectorAll("[data-removegroup]").forEach((btn) => {
-        btn.addEventListener("click", () => {
+      groupsList.querySelectorAll('[data-removegroup]').forEach((btn) => {
+        btn.addEventListener('click', () => {
           if (state.groups.length <= 2) {
-            alert("En az 2 grup kalmalı.");
+            alert('En az 2 grup kalmalı.');
             return;
           }
           const id = Number(btn.dataset.removegroup);
@@ -848,17 +1058,17 @@
     }
 
     function renderScoreboard() {
-      scoreList.innerHTML = "";
+      scoreList.innerHTML = '';
       const ranking = sortGroups();
       ranking.forEach((group, index) => {
-        const row = document.createElement("div");
-        row.className = `score-entry ${index === 0 ? "rank-1" : index === 1 ? "rank-2" : index === 2 ? "rank-3" : "rank-other"}`;
+        const row = document.createElement('div');
+        row.className = `score-entry ${index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : 'rank-other'}`;
         row.innerHTML = `
           <div class="score-left">
             <div class="rank-box">${index + 1}</div>
             <div class="score-meta">
               <p class="name">${escapeHtml(group.name)}</p>
-              <p class="state">${index === 0 ? "Lider" : `${index + 1}. sırada`}</p>
+              <p class="state">${index === 0 ? 'Lider' : `${index + 1}. sırada`}</p>
             </div>
           </div>
           <div class="score-value">${group.score}<span>PUAN</span></div>
@@ -868,11 +1078,11 @@
     }
 
     function renderPresentationScoreboard() {
-      presentationScoreList.innerHTML = "";
+      presentationScoreList.innerHTML = '';
       const ranking = sortGroups();
       ranking.forEach((group) => {
-        const row = document.createElement("div");
-        row.className = "present-score-item";
+        const row = document.createElement('div');
+        row.className = 'present-score-item';
         row.innerHTML = `
           <div class="present-score-top">
             <div class="present-score-name">${escapeHtml(group.name)}</div>
@@ -888,22 +1098,23 @@
         presentationScoreList.appendChild(row);
       });
 
-      presentationScoreList.querySelectorAll("[data-presentpoint]").forEach((btn) => {
-        btn.addEventListener("click", () => updateGroupScore(Number(btn.dataset.id), Number(btn.dataset.presentpoint)));
+      presentationScoreList.querySelectorAll('[data-presentpoint]').forEach((btn) => {
+        btn.addEventListener('click', () => updateGroupScore(Number(btn.dataset.id), Number(btn.dataset.presentpoint)));
       });
     }
 
     function renderTheme() {
-      document.body.classList.toggle("dark", state.dark);
-      $("themeBtn").textContent = state.dark ? "Açık Tema" : "Koyu Tema";
+      document.body.classList.toggle('dark', state.dark);
+      $('themeBtn').textContent = state.dark ? 'Açık Tema' : 'Koyu Tema';
     }
 
     function renderPresentationMode() {
-      document.body.classList.toggle("presentation-mode", state.presentationMode);
-      $("presentationBtn").textContent = state.presentationMode ? "Yönetim Modu" : "Sunum Modu";
+      document.body.classList.toggle('presentation-mode', state.presentationMode);
+      $('presentationBtn').textContent = state.presentationMode ? 'Yönetim Modu' : 'Sunum Modu';
     }
 
     function renderAll() {
+      saveState();
       renderTheme();
       renderPresentationMode();
       renderQuestions();
@@ -914,45 +1125,61 @@
     }
 
     async function addQuestion() {
-      const title = $("newQuestionTitle").value.trim();
-      const text = $("newQuestionText").value.trim();
-      const answer = $("newAnswerText").value.trim();
+      const title = $('newQuestionTitle').value.trim();
+      const text = $('newQuestionText').value.trim();
+      const answer = $('newAnswerText').value.trim();
+      const minutes = Number($('newQuestionMinutes').value || 0);
+      const seconds = Number($('newQuestionSeconds').value || 0);
+      const durationSeconds = Math.min(600, (minutes * 60) + seconds);
       if (!title || !text || !answer) {
-        alert("Soru başlığı, soru metni ve cevap alanını doldur.");
+        alert('Soru başlığı, soru metni ve cevap alanını doldur.');
         return;
       }
 
-      const questionImage = await readFileAsDataUrl($("newQuestionImage").files[0]);
-      const answerImage = await readFileAsDataUrl($("newAnswerImage").files[0]);
+      const questionImage = await readFileAsDataUrl($('newQuestionImage').files[0]);
+      const answerImage = await readFileAsDataUrl($('newAnswerImage').files[0]);
 
-      state.questions.push({ title, text, answer, questionImage, answerImage });
-      $("newQuestionTitle").value = "";
-      $("newQuestionText").value = "";
-      $("newAnswerText").value = "";
-      $("newQuestionImage").value = "";
-      $("newAnswerImage").value = "";
+      state.questions.push({
+        id: Date.now(),
+        title,
+        text,
+        answer,
+        questionImage,
+        answerImage,
+        durationSeconds
+      });
+
+      $('newQuestionTitle').value = '';
+      $('newQuestionText').value = '';
+      $('newAnswerText').value = '';
+      $('newQuestionMinutes').value = '0';
+      $('newQuestionSeconds').value = '0';
+      $('newQuestionImage').value = '';
+      $('newAnswerImage').value = '';
       renderAll();
     }
 
-    $("addQuestionBtn").addEventListener("click", addQuestion);
-    $("nextQuestionBtn").addEventListener("click", goNextQuestion);
-    $("showAnswerBtn").addEventListener("click", toggleAnswer);
-    $("presentNextBtn").addEventListener("click", goNextQuestion);
-    $("presentAnswerBtn").addEventListener("click", toggleAnswer);
-    $("announceWinnerBtn").addEventListener("click", renderWinner);
-    $("presentWinnerBtn").addEventListener("click", renderWinner);
+    $('addQuestionBtn').addEventListener('click', addQuestion);
+    $('nextQuestionBtn').addEventListener('click', goNextQuestion);
+    $('showAnswerBtn').addEventListener('click', toggleAnswer);
+    $('presentNextBtn').addEventListener('click', goNextQuestion);
+    $('presentAnswerBtn').addEventListener('click', toggleAnswer);
+    $('presentTimerBtn').addEventListener('click', toggleTimer);
+    $('announceWinnerBtn').addEventListener('click', renderWinner);
+    $('presentWinnerBtn').addEventListener('click', renderWinner);
+    $('clearStorageBtn').addEventListener('click', resetStorage);
 
-    $("themeBtn").addEventListener("click", () => {
+    $('themeBtn').addEventListener('click', () => {
       state.dark = !state.dark;
-      renderTheme();
+      renderAll();
     });
 
-    $("presentationBtn").addEventListener("click", () => {
+    $('presentationBtn').addEventListener('click', () => {
       state.presentationMode = !state.presentationMode;
-      renderPresentationMode();
+      renderAll();
     });
 
-    $("fullscreenBtn").addEventListener("click", async () => {
+    $('fullscreenBtn').addEventListener('click', async () => {
       try {
         if (!document.fullscreenElement) {
           await document.documentElement.requestFullscreen();
@@ -960,75 +1187,83 @@
           await document.exitFullscreen();
         }
       } catch (error) {
-        console.error("Tam ekran açılamadı", error);
+        console.error('Tam ekran açılamadı', error);
       }
     });
 
-    $("resetBtn").addEventListener("click", () => {
+    $('resetBtn').addEventListener('click', () => {
       state.groups = state.groups.map((g) => ({ ...g, score: 0 }));
       hideAnnouncements();
       renderAll();
     });
 
-    $("addGroupBtn").addEventListener("click", () => {
-      const name = $("newGroupName").value.trim();
+    $('addGroupBtn').addEventListener('click', () => {
+      const name = $('newGroupName').value.trim();
       if (!name) return;
       if (state.groups.length >= 15) {
-        alert("En fazla 15 grup ekleyebilirsin.");
+        alert('En fazla 15 grup ekleyebilirsin.');
         return;
       }
       state.groups.push({ id: Date.now(), name, score: 0 });
-      $("newGroupName").value = "";
+      $('newGroupName').value = '';
       renderAll();
     });
 
-    $("newGroupName").addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
+    $('newGroupName').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
         e.preventDefault();
-        $("addGroupBtn").click();
+        $('addGroupBtn').click();
       }
     });
 
-    $("shareBtn").addEventListener("click", async () => {
+    $('shareBtn').addEventListener('click', async () => {
       const payload = {
         dark: state.dark,
         answerVisible: state.answerVisible,
         presentationMode: state.presentationMode,
         activeQuestionIndex: state.activeQuestionIndex,
+        timer: state.timer,
         questions: state.questions,
         groups: state.groups,
       };
       const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
       const url = `${window.location.origin}${window.location.pathname}?state=${encoded}`;
-      shareBox.style.display = "block";
-      shareBox.innerHTML = `Bağlantı hazır: <strong>${escapeHtml(url)}</strong>`;
+      shareBox.style.display = 'block';
+      shareBox.innerHTML = `Bağlantı hazır: <strong>${escapeHtml(url)}</strong><br>Not: Aynı tarayıcıda sorular, gruplar ve süre ayarları otomatik kaydedilir.`;
       try {
         await navigator.clipboard.writeText(url);
-        shareBox.innerHTML += "<br>Bağlantı panoya da kopyalandı.";
+        shareBox.innerHTML += '<br>Bağlantı panoya da kopyalandı.';
       } catch (e) {
-        shareBox.innerHTML += "<br>Panoya otomatik kopyalanamadı. Elle kopyalayabilirsin.";
+        shareBox.innerHTML += '<br>Panoya otomatik kopyalanamadı. Elle kopyalayabilirsin.';
       }
     });
 
     function loadFromUrl() {
       const params = new URLSearchParams(window.location.search);
-      const raw = params.get("state");
+      const raw = params.get('state');
       if (!raw) return;
       try {
         const parsed = JSON.parse(decodeURIComponent(escape(atob(raw))));
-        if (typeof parsed.dark === "boolean") state.dark = parsed.dark;
-        if (typeof parsed.answerVisible === "boolean") state.answerVisible = parsed.answerVisible;
-        if (typeof parsed.presentationMode === "boolean") state.presentationMode = parsed.presentationMode;
-        if (typeof parsed.activeQuestionIndex === "number") state.activeQuestionIndex = parsed.activeQuestionIndex;
+        if (typeof parsed.dark === 'boolean') state.dark = parsed.dark;
+        if (typeof parsed.answerVisible === 'boolean') state.answerVisible = parsed.answerVisible;
+        if (typeof parsed.presentationMode === 'boolean') state.presentationMode = parsed.presentationMode;
+        if (typeof parsed.activeQuestionIndex === 'number') state.activeQuestionIndex = parsed.activeQuestionIndex;
+        if (parsed.timer && typeof parsed.timer === 'object') state.timer = parsed.timer;
         if (Array.isArray(parsed.questions)) state.questions = parsed.questions;
         if (Array.isArray(parsed.groups)) state.groups = parsed.groups;
       } catch (err) {
-        console.error("Bağlantı verisi okunamadı", err);
+        console.error('Bağlantı verisi okunamadı', err);
       }
     }
 
+    loadState();
     loadFromUrl();
     renderAll();
+    if (state.timer.running && state.timer.durationSeconds > 0 && state.timer.remainingSeconds > 0) {
+      toggleTimer();
+    } else {
+      updateTimerUI();
+    }
   </script>
 </body>
 </html>
