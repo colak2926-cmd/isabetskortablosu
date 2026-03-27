@@ -2,14 +2,27 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>İsabet Okulları Skor Tablosu</title>
 
 <style>
+:root {
+  --orange:#f97316;
+  --navy:#0f172a;
+  --card:#ffffff;
+  --bg:#f8fafc;
+  --text:#0f172a;
+}
+
 body{
   margin:0;
   font-family:Arial;
-  background:#0f172a;
-  color:white;
+  background:var(--bg);
+  color:var(--text);
+}
+
+.container{
+  padding:20px;
 }
 
 .header{
@@ -17,36 +30,42 @@ body{
   align-items:center;
   gap:15px;
   padding:20px;
+  background:#1e293b;
+  color:white;
 }
 
 .header img{
   height:70px;
 }
 
-.container{
-  padding:20px;
+button{
+  padding:10px 15px;
+  border:none;
+  border-radius:10px;
+  background:var(--orange);
+  color:white;
+  cursor:pointer;
 }
 
 .question{
-  font-size:40px;
+  font-size:35px;
   margin:20px 0;
 }
 
 .timer{
   font-size:50px;
-  color:#f97316;
-}
-
-button{
-  padding:10px 20px;
-  margin:5px;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
+  color:var(--orange);
 }
 
 .score{
   margin-top:20px;
+}
+
+.group{
+  padding:10px;
+  background:white;
+  margin:5px 0;
+  border-radius:10px;
 }
 </style>
 </head>
@@ -54,7 +73,8 @@ button{
 <body>
 
 <div class="header">
-  <img src="logo.png">
+  <!-- LOGO -->
+  <img src="logo.jpg">
   <h1>İsabet Okulları Skor Tablosu</h1>
 </div>
 
@@ -69,7 +89,12 @@ Henüz soru yok
 <button onclick="nextQuestion()">Sıradaki Soru</button>
 <button onclick="startTimer()">Sayaç Başlat</button>
 
-<div class="score" id="score"></div>
+<h2>Gruplar</h2>
+
+<input id="groupName" placeholder="Grup adı">
+<button onclick="addGroup()">Ekle</button>
+
+<div id="groups"></div>
 
 </div>
 
@@ -79,6 +104,8 @@ let questions = [
   {text:"2+2 kaçtır?", time:60},
   {text:"Üçgenin iç açıları toplamı?", time:120}
 ];
+
+let groups = [];
 
 let current = -1;
 let time = 0;
@@ -110,6 +137,36 @@ function updateTimer(){
   let sec = time % 60;
   document.getElementById("timer").innerText =
     String(min).padStart(2,'0') + ":" + String(sec).padStart(2,'0');
+}
+
+function addGroup(){
+  let name = document.getElementById("groupName").value;
+  if(!name) return;
+
+  groups.push({name:name, score:0});
+  document.getElementById("groupName").value="";
+  renderGroups();
+}
+
+function addScore(i){
+  groups[i].score +=10;
+  renderGroups();
+}
+
+function renderGroups(){
+  let div = document.getElementById("groups");
+  div.innerHTML="";
+
+  groups.sort((a,b)=>b.score-a.score);
+
+  groups.forEach((g,i)=>{
+    div.innerHTML += `
+      <div class="group">
+        ${g.name} - ${g.score} puan
+        <button onclick="addScore(${i})">+10</button>
+      </div>
+    `;
+  });
 }
 
 </script>
