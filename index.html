@@ -791,6 +791,15 @@
         if (parsed.timer && typeof parsed.timer === 'object') state.timer = parsed.timer;
         if (Array.isArray(parsed.questions)) state.questions = parsed.questions;
         if (Array.isArray(parsed.groups)) state.groups = parsed.groups;
+
+        state.timer.running = false;
+        if (state.activeQuestionIndex >= 0 && state.questions[state.activeQuestionIndex]) {
+          state.timer.durationSeconds = Number(state.questions[state.activeQuestionIndex].durationSeconds || 0);
+          state.timer.remainingSeconds = state.timer.durationSeconds;
+        } else {
+          state.timer.durationSeconds = 0;
+          state.timer.remainingSeconds = 0;
+        }
       } catch (error) {
         console.error('Kayıt okunamadı', error);
       }
@@ -1305,12 +1314,18 @@
 
     loadState();
     loadFromUrl();
-    renderAll();
-    if (state.timer.running && state.timer.durationSeconds > 0 && state.timer.remainingSeconds > 0) {
-      toggleTimer();
+
+    state.timer.running = false;
+    if (state.activeQuestionIndex >= 0 && state.questions[state.activeQuestionIndex]) {
+      state.timer.durationSeconds = Number(state.questions[state.activeQuestionIndex].durationSeconds || 0);
+      state.timer.remainingSeconds = state.timer.durationSeconds;
     } else {
-      updateTimerUI();
+      state.timer.durationSeconds = 0;
+      state.timer.remainingSeconds = 0;
     }
+
+    renderAll();
+    updateTimerUI();
   </script>
 </body>
 </html>
