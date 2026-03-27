@@ -536,7 +536,25 @@
       .score-actions { grid-template-columns: repeat(2, 1fr); }
       .score-entry.rank-2, .score-entry.rank-3, .score-entry.rank-other { margin-left: 0; }
     }
-  </style>
+  .confetti {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  background: red;
+  top: 0;
+  opacity: 0.8;
+  z-index: 99999;
+  animation: fall linear forwards;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+</style>
 </head>
 <body>
   <div class="container">
@@ -959,7 +977,20 @@
       winnerBox.style.display = 'none';
     }
 
+    function launchConfetti() {
+      for (let i = 0; i < 120; i++) {
+        const div = document.createElement('div');
+        div.className = 'confetti';
+        div.style.left = Math.random() * 100 + 'vw';
+        div.style.background = ['#f97316','#0f172a','#22c55e','#3b82f6','#eab308'][Math.floor(Math.random()*5)];
+        div.style.animationDuration = (Math.random() * 2 + 2) + 's';
+        document.body.appendChild(div);
+        setTimeout(() => div.remove(), 3000);
+      }
+    }
+
     function renderWinner() {
+      launchConfetti();
       const ranking = sortGroups();
       if (!ranking.length) return;
       const top = ranking[0];
@@ -967,6 +998,8 @@
       $('winnerTitle').textContent = hasSingleWinner ? 'Tebrikler, kazandınız!' : 'Lider grup ekranda!';
       $('winnerSub').textContent = `${top.name} • ${top.score} puan`;
       winnerBox.style.display = 'block';
+      announceBox.style.display = 'block';
+      announceBox.textContent = `${top.name} kazandı! Toplam puan: ${top.score}`;
     }
 
     function renderQuestions() {
