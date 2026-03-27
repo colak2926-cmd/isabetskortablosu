@@ -151,7 +151,7 @@
 
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-    .question-list { display: grid; gap: 10px; max-height: 420px; overflow: auto; }
+    .question-list { display: grid; gap: 10px; max-height: 600px; overflow: auto; }
 
     .question-item {
       border: 1px solid var(--border);
@@ -280,7 +280,8 @@
 
     .question-image, .answer-image {
       max-width: 100%;
-      max-height: 420px;
+      width: 100%;
+      max-height: 600px;
       border-radius: 22px;
       border: 1px solid rgba(255,255,255,.14);
       object-fit: contain;
@@ -408,6 +409,7 @@
 
     body.presentation-mode .container {
       max-width: 100%;
+      width: 100%;
       padding: 0;
     }
 
