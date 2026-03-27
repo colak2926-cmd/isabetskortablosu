@@ -6,167 +6,161 @@
 <title>İsabet Okulları Skor Tablosu</title>
 
 <style>
-:root {
-  --orange:#f97316;
-  --navy:#0f172a;
-  --card:#ffffff;
-  --bg:#f8fafc;
-  --text:#0f172a;
-}
-
 body{
   margin:0;
   font-family:Arial;
-  background:var(--bg);
-  color:var(--text);
+  background:#f1f5f9;
 }
 
 .container{
-  padding:20px;
+  display:grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap:10px;
+  padding:10px;
 }
 
-.header{
-  display:flex;
-  align-items:center;
-  gap:15px;
-  padding:20px;
-  background:#1e293b;
+.panel{
+  background:white;
+  padding:15px;
+  border-radius:15px;
+}
+
+.stage{
+  background:#0f172a;
   color:white;
-}
-
-.header img{
-  height:70px;
-}
-
-button{
-  padding:10px 15px;
-  border:none;
-  border-radius:10px;
-  background:var(--orange);
-  color:white;
-  cursor:pointer;
+  border-radius:20px;
+  padding:20px;
 }
 
 .question{
   font-size:35px;
-  margin:20px 0;
 }
 
 .timer{
-  font-size:50px;
-  color:var(--orange);
+  font-size:40px;
+  color:#f97316;
+}
+
+button{
+  margin:5px;
+  padding:8px;
+  border:none;
+  border-radius:8px;
+  background:#f97316;
+  color:white;
 }
 
 .score{
-  margin-top:20px;
-}
-
-.group{
-  padding:10px;
-  background:white;
-  margin:5px 0;
-  border-radius:10px;
+  margin-top:10px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">
-  <!-- LOGO -->
-  <img src="logo.jpg">
-  <h1>İsabet Okulları Skor Tablosu</h1>
-</div>
+<h1 style="text-align:center;">İsabet Okulları Skor Tablosu</h1>
 
 <div class="container">
 
-<div class="timer" id="timer">00:00</div>
-
-<div class="question" id="question">
-Henüz soru yok
+<div class="panel">
+<h2>Soru Ekle</h2>
+<input id="qText" placeholder="Soru"><br>
+<input id="qAnswer" placeholder="Cevap"><br>
+<button onclick="addQuestion()">Ekle</button>
+<div id="qList"></div>
 </div>
 
-<button onclick="nextQuestion()">Sıradaki Soru</button>
-<button onclick="startTimer()">Sayaç Başlat</button>
+<div class="stage">
+<div class="timer" id="timer">00:00</div>
+<div class="question" id="question">Soru yok</div>
+<div id="answer" style="display:none;">Cevap</div>
 
+<button onclick="nextQuestion()">Sıradaki</button>
+<button onclick="showAnswer()">Cevap Göster</button>
+</div>
+
+<div class="panel">
 <h2>Gruplar</h2>
-
-<input id="groupName" placeholder="Grup adı">
+<input id="gName" placeholder="Grup adı">
 <button onclick="addGroup()">Ekle</button>
-
 <div id="groups"></div>
+</div>
 
 </div>
 
 <script>
 
-let questions = [
-  {text:"2+2 kaçtır?", time:60},
-  {text:"Üçgenin iç açıları toplamı?", time:120}
-];
-
-let groups = [];
-
-let current = -1;
-let time = 0;
+let questions=[];
+let current=-1;
+let time=0;
 let interval;
+let groups=[];
 
-function nextQuestion(){
-  current++;
-  if(current >= questions.length) current = 0;
-
-  let q = questions[current];
-  document.getElementById("question").innerText = q.text;
-
-  time = q.time;
-  updateTimer();
+function addQuestion(){
+let q=document.getElementById("qText").value;
+let a=document.getElementById("qAnswer").value;
+questions.push({q,a,time:60});
+renderQ();
 }
 
-function startTimer(){
-  clearInterval(interval);
-  interval = setInterval(()=>{
-    if(time > 0){
-      time--;
-      updateTimer();
-    }
-  },1000);
+function renderQ(){
+let div=document.getElementById("qList");
+div.innerHTML="";
+questions.forEach((x,i)=>{
+div.innerHTML+=`<div>${x.q}</div>`;
+});
+}
+
+function nextQuestion(){
+current++;
+if(current>=questions.length) current=0;
+document.getElementById("question").innerText=questions[current].q;
+document.getElementById("answer").innerText=questions[current].a;
+document.getElementById("answer").style.display="none";
+time=questions[current].time;
+updateTimer();
+}
+
+function showAnswer(){
+document.getElementById("answer").style.display="block";
 }
 
 function updateTimer(){
-  let min = Math.floor(time/60);
-  let sec = time % 60;
-  document.getElementById("timer").innerText =
-    String(min).padStart(2,'0') + ":" + String(sec).padStart(2,'0');
+let m=Math.floor(time/60);
+let s=time%60;
+document.getElementById("timer").innerText=
+String(m).padStart(2,'0')+":"+String(s).padStart(2,'0');
+}
+
+function startTimer(){
+clearInterval(interval);
+interval=setInterval(()=>{
+if(time>0){time--;updateTimer();}
+},1000);
 }
 
 function addGroup(){
-  let name = document.getElementById("groupName").value;
-  if(!name) return;
-
-  groups.push({name:name, score:0});
-  document.getElementById("groupName").value="";
-  renderGroups();
-}
-
-function addScore(i){
-  groups[i].score +=10;
-  renderGroups();
+let name=document.getElementById("gName").value;
+groups.push({name,score:0});
+renderGroups();
 }
 
 function renderGroups(){
-  let div = document.getElementById("groups");
-  div.innerHTML="";
+let div=document.getElementById("groups");
+div.innerHTML="";
+groups.sort((a,b)=>b.score-a.score);
+groups.forEach((g,i)=>{
+div.innerHTML+=`
+<div class="score">
+${g.name} - ${g.score}
+<button onclick="addScore(${i})">+10</button>
+</div>`;
+});
+}
 
-  groups.sort((a,b)=>b.score-a.score);
-
-  groups.forEach((g,i)=>{
-    div.innerHTML += `
-      <div class="group">
-        ${g.name} - ${g.score} puan
-        <button onclick="addScore(${i})">+10</button>
-      </div>
-    `;
-  });
+function addScore(i){
+groups[i].score+=10;
+renderGroups();
 }
 
 </script>
