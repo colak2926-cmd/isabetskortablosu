@@ -719,8 +719,10 @@
   <script>
     const STORAGE_KEY = 'isabet_skor_tablosu_v3';
     let countdownInterval = null;
-    let audioContext = null;
-    let lastTickSecondPlayed = null;
+
+    let audioCtx = null;
+    let soundEnabled = false;
+    let lastPlayedSecond = null;
 
     const defaultState = {
       dark: false,
@@ -783,49 +785,93 @@
       });
     }
 
-    function ensureAudioContext() {
-      if (!audioContext) {
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        if (AudioCtx) {
-          audioContext = new AudioCtx();
+    function initSound() {
+      try {
+        if (!audioCtx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) {
+            audioCtx = new AudioContextClass();
+          }
         }
-      }
-      if (audioContext && audioContext.state === 'suspended') {
-        audioContext.resume().catch(() => {});
+
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+
+        soundEnabled = !!audioCtx;
+      } catch (error) {
+        console.error('Ses başlatılamadı', error);
+        soundEnabled = false;
       }
     }
 
-    function playTickSound() {
-      ensureAudioContext();
-      if (!audioContext) return;
+    function playTick() {
+      if (!soundEnabled || !audioCtx) return;
 
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
+      try {
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
 
-      oscillator.type = 'square';
-      oscillator.frequency.setValueAtTime(1200, audioContext.currentTime);
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
 
-      gainNode.gain.setValueAtTime(0.0001, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.12, audioContext.currentTime + 0.005);
-      gainNode.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.08);
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(1600, audioCtx.currentTime);
 
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
+        gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.18, audioCtx.currentTime + 0.005);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.07);
 
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.08);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + 0.07);
+      } catch (error) {
+        console.error('Tik sesi çalınamadı', error);
+      }
     }
 
-    function playLastTenSecondsTick() {
+    function playEndSound() {
+      if (!soundEnabled || !audioCtx) return;
+
+      try {
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(900, audioCtx.currentTime);
+        osc.frequency.linearRampToValueAtTime(500, audioCtx.currentTime + 0.45);
+
+        gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.22, audioCtx.currentTime + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.5);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + 0.5);
+      } catch (error) {
+        console.error('Bitiş sesi çalınamadı', error);
+      }
+    }
+
+    function resetTickState() {
+      lastPlayedSecond = null;
+    }
+
+    function playLastTenSecondTick() {
       const sec = state.timer.remainingSeconds;
-      if (sec <= 10 && sec > 0 && lastTickSecondPlayed !== sec) {
-        lastTickSecondPlayed = sec;
-        playTickSound();
+      if (sec <= 10 && sec > 0 && lastPlayedSecond !== sec) {
+        lastPlayedSecond = sec;
+        playTick();
       }
-    }
-
-    function resetTickMemory() {
-      lastTickSecondPlayed = null;
     }
 
     function saveState() {
@@ -866,7 +912,7 @@
       localStorage.removeItem(STORAGE_KEY);
       stopTimer();
       Object.assign(state, structuredClone(defaultState));
-      resetTickMemory();
+      resetTickState();
       renderAll();
       shareBox.style.display = 'block';
       shareBox.innerHTML = 'Kaydedilmiş soru ve grup kayıtları sıfırlandı.';
@@ -907,7 +953,8 @@
 
     function startTimerFromQuestion(question) {
       stopTimer(false);
-      resetTickMemory();
+      resetTickState();
+
       const duration = Number(question?.durationSeconds || 0);
       state.timer.durationSeconds = duration;
       state.timer.remainingSeconds = duration;
@@ -919,11 +966,13 @@
         countdownInterval = setInterval(() => {
           if (state.timer.remainingSeconds > 0) {
             state.timer.remainingSeconds -= 1;
-            playLastTenSecondsTick();
+            playLastTenSecondTick();
             updateTimerUI();
             saveState();
           }
+
           if (state.timer.remainingSeconds <= 0) {
+            playEndSound();
             stopTimer();
             announceBox.style.display = 'block';
             announceBox.textContent = 'Süre doldu!';
@@ -933,10 +982,13 @@
           }
         }, 1000);
       }
+
       saveState();
     }
 
     function toggleTimer() {
+      initSound();
+
       if (state.timer.durationSeconds <= 0) return;
 
       if (state.timer.running) {
@@ -948,11 +1000,13 @@
       countdownInterval = setInterval(() => {
         if (state.timer.remainingSeconds > 0) {
           state.timer.remainingSeconds -= 1;
-          playLastTenSecondsTick();
+          playLastTenSecondTick();
           updateTimerUI();
           saveState();
         }
+
         if (state.timer.remainingSeconds <= 0) {
+          playEndSound();
           stopTimer();
           announceBox.style.display = 'block';
           announceBox.textContent = 'Süre doldu!';
@@ -999,6 +1053,7 @@
     }
 
     function publishQuestion(index) {
+      initSound();
       state.activeQuestionIndex = index;
       state.answerVisible = false;
       hideAnnouncements();
@@ -1017,6 +1072,7 @@
     }
 
     function goNextQuestion() {
+      initSound();
       if (!state.questions.length) return;
       if (state.activeQuestionIndex < state.questions.length - 1) {
         state.activeQuestionIndex += 1;
@@ -1100,6 +1156,7 @@
 
       questionList.querySelectorAll('[data-showanswer]').forEach((btn) => {
         btn.addEventListener('click', () => {
+          initSound();
           state.activeQuestionIndex = Number(btn.dataset.showanswer);
           state.answerVisible = true;
           renderAll();
@@ -1116,7 +1173,7 @@
             stopTimer(false);
             state.timer.durationSeconds = 0;
             state.timer.remainingSeconds = 0;
-            resetTickMemory();
+            resetTickState();
           }
           if (state.activeQuestionIndex > index) state.activeQuestionIndex -= 1;
           hideAnnouncements();
@@ -1241,6 +1298,7 @@
       const minutes = Number($('newQuestionMinutes').value || 0);
       const seconds = Number($('newQuestionSeconds').value || 0);
       const durationSeconds = Math.min(600, (minutes * 60) + seconds);
+
       if (!title || !text || !answer) {
         alert('Soru başlığı, soru metni ve cevap alanını doldur.');
         return;
@@ -1293,7 +1351,7 @@
       state.presentationMode = false;
       state.answerVisible = false;
       stopTimer(false);
-      resetTickMemory();
+      resetTickState();
       hideAnnouncements();
       renderAll();
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1349,10 +1407,13 @@
         questions: state.questions,
         groups: state.groups,
       };
+
       const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
       const url = `${window.location.origin}${window.location.pathname}?state=${encoded}`;
+
       shareBox.style.display = 'block';
       shareBox.innerHTML = `Bağlantı hazır: <strong>${escapeHtml(url)}</strong><br>Not: Aynı tarayıcıda sorular, gruplar ve süre ayarları otomatik kaydedilir.`;
+
       try {
         await navigator.clipboard.writeText(url);
         shareBox.innerHTML += '<br>Bağlantı panoya da kopyalandı.';
@@ -1365,6 +1426,7 @@
       const params = new URLSearchParams(window.location.search);
       const raw = params.get('state');
       if (!raw) return;
+
       try {
         const parsed = JSON.parse(decodeURIComponent(escape(atob(raw))));
         if (typeof parsed.dark === 'boolean') state.dark = parsed.dark;
@@ -1379,14 +1441,11 @@
       }
     }
 
-    document.addEventListener('click', ensureAudioContext, { once: true });
-    document.addEventListener('keydown', ensureAudioContext, { once: true });
-
     loadState();
     loadFromUrl();
 
     state.timer.running = false;
-    resetTickMemory();
+    resetTickState();
 
     if (state.activeQuestionIndex >= 0 && state.questions[state.activeQuestionIndex]) {
       state.timer.durationSeconds = Number(state.questions[state.activeQuestionIndex].durationSeconds || 0);
