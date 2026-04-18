@@ -719,6 +719,8 @@
   <script>
     const STORAGE_KEY = 'isabet_skor_tablosu_v3';
     let countdownInterval = null;
+    let audioContext = null;
+    let lastTickSecondPlayed = null;
 
     const defaultState = {
       dark: false,
@@ -781,6 +783,51 @@
       });
     }
 
+    function ensureAudioContext() {
+      if (!audioContext) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) {
+          audioContext = new AudioCtx();
+        }
+      }
+      if (audioContext && audioContext.state === 'suspended') {
+        audioContext.resume().catch(() => {});
+      }
+    }
+
+    function playTickSound() {
+      ensureAudioContext();
+      if (!audioContext) return;
+
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.type = 'square';
+      oscillator.frequency.setValueAtTime(1200, audioContext.currentTime);
+
+      gainNode.gain.setValueAtTime(0.0001, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.12, audioContext.currentTime + 0.005);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.08);
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.08);
+    }
+
+    function playLastTenSecondsTick() {
+      const sec = state.timer.remainingSeconds;
+      if (sec <= 10 && sec > 0 && lastTickSecondPlayed !== sec) {
+        lastTickSecondPlayed = sec;
+        playTickSound();
+      }
+    }
+
+    function resetTickMemory() {
+      lastTickSecondPlayed = null;
+    }
+
     function saveState() {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -819,6 +866,7 @@
       localStorage.removeItem(STORAGE_KEY);
       stopTimer();
       Object.assign(state, structuredClone(defaultState));
+      resetTickMemory();
       renderAll();
       shareBox.style.display = 'block';
       shareBox.innerHTML = 'Kaydedilmiş soru ve grup kayıtları sıfırlandı.';
@@ -859,16 +907,19 @@
 
     function startTimerFromQuestion(question) {
       stopTimer(false);
+      resetTickMemory();
       const duration = Number(question?.durationSeconds || 0);
       state.timer.durationSeconds = duration;
       state.timer.remainingSeconds = duration;
       state.timer.running = false;
       updateTimerUI();
+
       if (duration > 0) {
         state.timer.running = true;
         countdownInterval = setInterval(() => {
           if (state.timer.remainingSeconds > 0) {
             state.timer.remainingSeconds -= 1;
+            playLastTenSecondsTick();
             updateTimerUI();
             saveState();
           }
@@ -887,14 +938,17 @@
 
     function toggleTimer() {
       if (state.timer.durationSeconds <= 0) return;
+
       if (state.timer.running) {
         stopTimer();
         return;
       }
+
       state.timer.running = true;
       countdownInterval = setInterval(() => {
         if (state.timer.remainingSeconds > 0) {
           state.timer.remainingSeconds -= 1;
+          playLastTenSecondsTick();
           updateTimerUI();
           saveState();
         }
@@ -907,6 +961,7 @@
           }, 2500);
         }
       }, 1000);
+
       saveState();
       updateTimerUI();
     }
@@ -1061,6 +1116,7 @@
             stopTimer(false);
             state.timer.durationSeconds = 0;
             state.timer.remainingSeconds = 0;
+            resetTickMemory();
           }
           if (state.activeQuestionIndex > index) state.activeQuestionIndex -= 1;
           hideAnnouncements();
@@ -1237,6 +1293,7 @@
       state.presentationMode = false;
       state.answerVisible = false;
       stopTimer(false);
+      resetTickMemory();
       hideAnnouncements();
       renderAll();
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1322,10 +1379,15 @@
       }
     }
 
+    document.addEventListener('click', ensureAudioContext, { once: true });
+    document.addEventListener('keydown', ensureAudioContext, { once: true });
+
     loadState();
     loadFromUrl();
 
     state.timer.running = false;
+    resetTickMemory();
+
     if (state.activeQuestionIndex >= 0 && state.questions[state.activeQuestionIndex]) {
       state.timer.durationSeconds = Number(state.questions[state.activeQuestionIndex].durationSeconds || 0);
       state.timer.remainingSeconds = state.timer.durationSeconds;
